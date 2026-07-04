@@ -352,30 +352,61 @@ function Landing() {
             </p>
           </div>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {dishes.map((d) => (
-              <div
-                key={d.title}
-                className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-[var(--shadow-card)] transition hover:-translate-y-1"
-              >
-                <div className="flex h-40 items-center justify-center bg-gradient-to-br from-brand-green/10 to-brand-orange/10 text-6xl transition group-hover:scale-105">
-                  {d.emoji}
+          <div className="mt-14 space-y-16">
+            {menuCategories.map((cat) => (
+              <div key={cat.title}>
+                <div className="mb-8 flex items-end justify-between gap-4">
+                  <h3 className="font-display text-2xl font-bold sm:text-3xl">
+                    <span className={`text-${cat.accent}`}>—</span> {cat.title}
+                  </h3>
+                  <div className="hidden h-px flex-1 bg-border sm:block" />
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="text-lg font-bold">{d.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{d.desc}</p>
-                  <div className="mt-5 flex items-center justify-between">
-                    <span className="font-display text-lg font-bold text-brand-orange">
-                      {d.price}
-                    </span>
-                    <button className="rounded-full bg-brand-green px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-green-dark">
-                      Замовити
-                    </button>
-                  </div>
+
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {cat.items.map((d) => (
+                    <article
+                      key={d.title}
+                      className="group flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-[var(--shadow-card)] transition hover:-translate-y-1 hover:shadow-xl"
+                    >
+                      <div className="relative flex h-44 items-center justify-center bg-gradient-to-br from-brand-green/10 to-brand-orange/10 text-7xl transition group-hover:scale-105">
+                        {d.emoji}
+                        {d.tag && (
+                          <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow">
+                            {d.tag}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-1 flex-col p-6">
+                        <h4 className="font-display text-lg font-bold leading-tight">
+                          {d.title}
+                        </h4>
+                        <p className="mt-2 flex-1 text-sm text-muted-foreground">
+                          {d.desc}
+                        </p>
+                        <div className="mt-5 flex items-center justify-between border-t border-border/60 pt-4">
+                          <div>
+                            <div className="font-display text-xl font-bold text-brand-orange">
+                              {d.price}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              за {d.unit}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setOrderItem(d)}
+                            className="rounded-full bg-brand-green px-5 py-2.5 text-xs font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-brand-green-dark hover:shadow-lg"
+                          >
+                            Замовити
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
+
         </div>
       </section>
 
