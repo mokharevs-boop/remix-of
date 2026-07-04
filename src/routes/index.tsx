@@ -146,9 +146,26 @@ const reviews = [
   },
 ];
 
+type MenuItem = (typeof menuCategories)[number]["items"][number];
+
 function Landing() {
-  
   const [menuOpen, setMenuOpen] = useState(false);
+  const [orderItem, setOrderItem] = useState<MenuItem | null>(null);
+  const [orderName, setOrderName] = useState("");
+  const [orderPhone, setOrderPhone] = useState("");
+  const [orderSent, setOrderSent] = useState(false);
+
+  const handleOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setOrderSent(true);
+    setTimeout(() => {
+      setOrderItem(null);
+      setOrderSent(false);
+      setOrderName("");
+      setOrderPhone("");
+    }, 1800);
+  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
