@@ -99,7 +99,7 @@ const reviews = [
 ];
 
 function Landing() {
-  const [voiceOpen, setVoiceOpen] = useState(false);
+  
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
