@@ -546,6 +546,83 @@ function Landing() {
       {/* Voice AI Assistant Widget */}
       <VoiceAssistant />
 
+      {/* Order modal */}
+      {orderItem && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+          onClick={() => !orderSent && setOrderItem(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {orderSent ? (
+              <div className="py-6 text-center">
+                <div className="mb-4 text-5xl">✅</div>
+                <h3 className="font-display text-2xl font-bold">Дякуємо!</h3>
+                <p className="mt-2 text-muted-foreground">
+                  Ми зателефонуємо впродовж 15 хвилин, щоб підтвердити замовлення.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-widest text-brand-green">
+                      Замовлення
+                    </div>
+                    <h3 className="mt-1 font-display text-xl font-bold">
+                      {orderItem.title}
+                    </h3>
+                    <div className="mt-1 text-sm text-brand-orange font-semibold">
+                      {orderItem.price} / {orderItem.unit}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setOrderItem(null)}
+                    className="rounded-md p-1 hover:bg-muted"
+                    aria-label="Закрити"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-brand-orange/30 bg-brand-orange/10 p-3 text-sm">
+                  🎙️ <strong>Порада:</strong> Ви можете оформити це замовлення
+                  голосом — просто натисніть на помаранчевий мікрофон унизу
+                  екрана!
+                </div>
+
+                <form onSubmit={handleOrderSubmit} className="mt-5 space-y-3">
+                  <input
+                    required
+                    value={orderName}
+                    onChange={(e) => setOrderName(e.target.value)}
+                    placeholder="Ваше ім'я"
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 outline-none focus:border-brand-green"
+                  />
+                  <input
+                    required
+                    type="tel"
+                    value={orderPhone}
+                    onChange={(e) => setOrderPhone(e.target.value)}
+                    placeholder="Телефон (+380...)"
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 outline-none focus:border-brand-green"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full rounded-full py-3.5 text-sm font-semibold btn-hero"
+                  >
+                    Підтвердити замовлення
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
