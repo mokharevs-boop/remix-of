@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Mic,
   ChefHat,
   Sparkles,
   Timer,
@@ -13,6 +12,7 @@ import {
   Menu as MenuIcon,
   X,
 } from "lucide-react";
+import { VoiceAssistant } from "@/components/VoiceAssistant";
 
 export const Route = createFileRoute("/")({
   head: () => ({
