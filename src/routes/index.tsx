@@ -448,41 +448,8 @@ function Landing() {
       </footer>
 
       {/* Voice AI Assistant Widget */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-        {voiceOpen && (
-          <div className="w-72 rounded-2xl border border-border bg-card p-5 shadow-2xl">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="font-display font-bold">Голосовий помічник</div>
-                <div className="text-xs text-muted-foreground">Наш Край · онлайн</div>
-              </div>
-              <button
-                onClick={() => setVoiceOpen(false)}
-                className="rounded-md p-1 hover:bg-muted"
-                aria-label="Закрити"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="mt-4 rounded-xl bg-muted p-3 text-sm">
-              👋 Привіт! Я допоможу скласти святкове меню. Натисніть кнопку мікрофона і
-              скажіть, скільки гостей чекаєте.
-            </div>
-            <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-semibold btn-brand">
-              <Mic className="h-4 w-4" /> Говорити
-            </button>
-          </div>
-        )}
+      <VoiceAssistant />
 
-        <button
-          onClick={() => setVoiceOpen((v) => !v)}
-          className="group relative flex h-16 w-16 items-center justify-center rounded-full text-white btn-hero"
-          aria-label="Голосовий асистент"
-        >
-          <span className="absolute inset-0 animate-ping rounded-full bg-brand-orange/40" />
-          <Mic className="relative h-6 w-6" />
-        </button>
-      </div>
     </div>
   );
 }
