@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Наш Край — Кулінарія та святкові страви на замовлення" },
+      { name: "description", content: "Замовляйте нарізки, гарячі страви, фуршетні закуски та святкові торти від мережі супермаркетів Наш Край. Свіжо, швидко, від шеф-кухарів." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Наш Край — Кулінарія та святкові страви на замовлення" },
+      { property: "og:description", content: "Замовляйте нарізки, гарячі страви, фуршетні закуски та святкові торти від мережі супермаркетів Наш Край. Свіжо, швидко, від шеф-кухарів." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Наш Край — Кулінарія та святкові страви на замовлення" },
+      { name: "twitter:description", content: "Замовляйте нарізки, гарячі страви, фуршетні закуски та святкові торти від мережі супермаркетів Наш Край. Свіжо, швидко, від шеф-кухарів." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5ad2d90f-4ebb-4444-9109-1f951e1a873a/id-preview-24987675--ca18096c-5a77-408d-ac5b-81c99392c4b4.lovable.app-1783156619958.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5ad2d90f-4ebb-4444-9109-1f951e1a873a/id-preview-24987675--ca18096c-5a77-408d-ac5b-81c99392c4b4.lovable.app-1783156619958.png" },
     ],
     links: [
       {
