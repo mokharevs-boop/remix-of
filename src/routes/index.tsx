@@ -35,80 +35,32 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const menuCategories = [
+const dishes = [
   {
-    title: "Фуршетні тарілки",
-    accent: "brand-orange",
-    items: [
-      {
-        title: "М'ясне асорті преміум",
-        desc: "Хамон, балик, ковбаса сирокопчена, свіжа зелень.",
-        price: "320 ₴",
-        unit: "тарілка",
-        emoji: "🍖",
-        tag: "Хіт",
-      },
-      {
-        title: "Сирне плато з медом та горіхами",
-        desc: "Дорблю, пармезан, брі, грецькі горіхи та квітковий мед.",
-        price: "290 ₴",
-        unit: "тарілка",
-        emoji: "🧀",
-        tag: "Веджі",
-      },
-    ],
+    title: "М'ясні та сирні нарізки",
+    desc: "Асорті преміум-ковбас, хамону, сирів з горіхами та медом.",
+    price: "від 320 ₴",
+    emoji: "🧀",
   },
   {
-    title: "Банкетні страви та салати",
-    accent: "brand-green",
-    items: [
-      {
-        title: "Салат Олів'є з куркою",
-        desc: "Класичний рецепт із філе курки та свіжим огірком.",
-        price: "195 ₴",
-        unit: "кг",
-        emoji: "🥗",
-      },
-      {
-        title: "Котлета по-київськи",
-        desc: "Соковита, з ніжною начинкою та хрусткою скоринкою.",
-        price: "65 ₴",
-        unit: "шт",
-        emoji: "🍗",
-        tag: "Топ",
-      },
-      {
-        title: "Крученики зі свинини з грибами",
-        desc: "Ніжна свинина, фарширована печерицями у вершковому соусі.",
-        price: "85 ₴",
-        unit: "шт",
-        emoji: "🥩",
-      },
-    ],
+    title: "Гарячі страви",
+    desc: "Запечена качка, соковита буженина, картопля по-домашньому.",
+    price: "від 450 ₴",
+    emoji: "🍗",
   },
   {
-    title: "Святкова випічка та десерти",
-    accent: "brand-orange",
-    items: [
-      {
-        title: "Торт «Київський затишок»",
-        desc: "Авторський торт на замовлення — за вашим ескізом.",
-        price: "420 ₴",
-        unit: "кг",
-        emoji: "🎂",
-        tag: "На замовлення",
-      },
-      {
-        title: "Сет міні-круасанів (10 шт)",
-        desc: "З бельгійським шоколадом та ванільним кремом.",
-        price: "180 ₴",
-        unit: "сет",
-        emoji: "🥐",
-      },
-    ],
+    title: "Фуршетні закуски",
+    desc: "Канапе, тарталетки, міні-роли — стильно та зручно для гостей.",
+    price: "від 280 ₴",
+    emoji: "🥂",
+  },
+  {
+    title: "Торти на замовлення",
+    desc: "Авторські десерти від кондитерів за вашим ескізом.",
+    price: "від 520 ₴/кг",
+    emoji: "🎂",
   },
 ];
-
 
 const features = [
   {
@@ -146,26 +98,9 @@ const reviews = [
   },
 ];
 
-type MenuItem = (typeof menuCategories)[number]["items"][number];
-
 function Landing() {
+  
   const [menuOpen, setMenuOpen] = useState(false);
-  const [orderItem, setOrderItem] = useState<MenuItem | null>(null);
-  const [orderName, setOrderName] = useState("");
-  const [orderPhone, setOrderPhone] = useState("");
-  const [orderSent, setOrderSent] = useState(false);
-
-  const handleOrderSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setOrderSent(true);
-    setTimeout(() => {
-      setOrderItem(null);
-      setOrderSent(false);
-      setOrderName("");
-      setOrderPhone("");
-    }, 1800);
-  };
-
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -352,61 +287,30 @@ function Landing() {
             </p>
           </div>
 
-          <div className="mt-14 space-y-16">
-            {menuCategories.map((cat) => (
-              <div key={cat.title}>
-                <div className="mb-8 flex items-end justify-between gap-4">
-                  <h3 className="font-display text-2xl font-bold sm:text-3xl">
-                    <span className={`text-${cat.accent}`}>—</span> {cat.title}
-                  </h3>
-                  <div className="hidden h-px flex-1 bg-border sm:block" />
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {dishes.map((d) => (
+              <div
+                key={d.title}
+                className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-[var(--shadow-card)] transition hover:-translate-y-1"
+              >
+                <div className="flex h-40 items-center justify-center bg-gradient-to-br from-brand-green/10 to-brand-orange/10 text-6xl transition group-hover:scale-105">
+                  {d.emoji}
                 </div>
-
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {cat.items.map((d) => (
-                    <article
-                      key={d.title}
-                      className="group flex flex-col overflow-hidden rounded-3xl border border-border/60 bg-card shadow-[var(--shadow-card)] transition hover:-translate-y-1 hover:shadow-xl"
-                    >
-                      <div className="relative flex h-44 items-center justify-center bg-gradient-to-br from-brand-green/10 to-brand-orange/10 text-7xl transition group-hover:scale-105">
-                        {d.emoji}
-                        {d.tag && (
-                          <span className="absolute left-4 top-4 rounded-full bg-brand-orange px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow">
-                            {d.tag}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-1 flex-col p-6">
-                        <h4 className="font-display text-lg font-bold leading-tight">
-                          {d.title}
-                        </h4>
-                        <p className="mt-2 flex-1 text-sm text-muted-foreground">
-                          {d.desc}
-                        </p>
-                        <div className="mt-5 flex items-center justify-between border-t border-border/60 pt-4">
-                          <div>
-                            <div className="font-display text-xl font-bold text-brand-orange">
-                              {d.price}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              за {d.unit}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => setOrderItem(d)}
-                            className="rounded-full bg-brand-green px-5 py-2.5 text-xs font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-brand-green-dark hover:shadow-lg"
-                          >
-                            Замовити
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="text-lg font-bold">{d.title}</h3>
+                  <p className="mt-2 flex-1 text-sm text-muted-foreground">{d.desc}</p>
+                  <div className="mt-5 flex items-center justify-between">
+                    <span className="font-display text-lg font-bold text-brand-orange">
+                      {d.price}
+                    </span>
+                    <button className="rounded-full bg-brand-green px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-green-dark">
+                      Замовити
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -545,83 +449,6 @@ function Landing() {
 
       {/* Voice AI Assistant Widget */}
       <VoiceAssistant />
-
-      {/* Order modal */}
-      {orderItem && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-          onClick={() => !orderSent && setOrderItem(null)}
-        >
-          <div
-            className="w-full max-w-md rounded-3xl bg-card p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {orderSent ? (
-              <div className="py-6 text-center">
-                <div className="mb-4 text-5xl">✅</div>
-                <h3 className="font-display text-2xl font-bold">Дякуємо!</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Ми зателефонуємо впродовж 15 хвилин, щоб підтвердити замовлення.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-semibold uppercase tracking-widest text-brand-green">
-                      Замовлення
-                    </div>
-                    <h3 className="mt-1 font-display text-xl font-bold">
-                      {orderItem.title}
-                    </h3>
-                    <div className="mt-1 text-sm text-brand-orange font-semibold">
-                      {orderItem.price} / {orderItem.unit}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setOrderItem(null)}
-                    className="rounded-md p-1 hover:bg-muted"
-                    aria-label="Закрити"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-
-                <div className="mt-4 rounded-2xl border border-brand-orange/30 bg-brand-orange/10 p-3 text-sm">
-                  🎙️ <strong>Порада:</strong> Ви можете оформити це замовлення
-                  голосом — просто натисніть на помаранчевий мікрофон унизу
-                  екрана!
-                </div>
-
-                <form onSubmit={handleOrderSubmit} className="mt-5 space-y-3">
-                  <input
-                    required
-                    value={orderName}
-                    onChange={(e) => setOrderName(e.target.value)}
-                    placeholder="Ваше ім'я"
-                    className="w-full rounded-xl border border-border bg-background px-4 py-3 outline-none focus:border-brand-green"
-                  />
-                  <input
-                    required
-                    type="tel"
-                    value={orderPhone}
-                    onChange={(e) => setOrderPhone(e.target.value)}
-                    placeholder="Телефон (+380...)"
-                    className="w-full rounded-xl border border-border bg-background px-4 py-3 outline-none focus:border-brand-green"
-                  />
-                  <button
-                    type="submit"
-                    className="w-full rounded-full py-3.5 text-sm font-semibold btn-hero"
-                  >
-                    Підтвердити замовлення
-                  </button>
-                </form>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
 
     </div>
   );
