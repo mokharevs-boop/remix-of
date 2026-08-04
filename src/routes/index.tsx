@@ -116,7 +116,7 @@ function Landing() {
     setMenuError("");
 
     try {
-      const response = await fetch("https://ТВІЙ_HOSTKEY_IP/webhook-test/oplis", {
+      const response = await fetch("https://n8n58127.hostkey.in/webhook-test/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
