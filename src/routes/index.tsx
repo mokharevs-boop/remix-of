@@ -12,6 +12,7 @@ import {
   Star,
   Menu as MenuIcon,
   X,
+  LoaderCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -101,6 +102,56 @@ const reviews = [
 function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [eventDescription, setEventDescription] = useState("");
+  const [menuResponse, setMenuResponse] = useState("");
+  const [menuError, setMenuError] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const generateMenu = async () => {
+    const message = eventDescription.trim();
+    if (!message || isGenerating) return;
+
+    setIsGenerating(true);
+    setMenuResponse("");
+    setMenuError("");
+
+    try {
+      const response = await fetch("https://ТВІЙ_HOSTKEY_IP/webhook-test/oplis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      const contentType = response.headers.get("content-type") ?? "";
+      const result: unknown = contentType.includes("application/json")
+        ? await response.json()
+        : await response.text();
+
+      if (!response.ok) {
+        throw new Error(`Сервер повернув помилку ${response.status}`);
+      }
+
+      if (typeof result === "string") {
+        setMenuResponse(result);
+      } else if (result && typeof result === "object") {
+        const payload = result as Record<string, unknown>;
+        const answer = payload.answer ?? payload.message ?? payload.response ?? payload.output;
+        setMenuResponse(
+          typeof answer === "string" ? answer : JSON.stringify(result, null, 2),
+        );
+      } else {
+        setMenuResponse("Меню згенеровано, але сервер не повернув текстової відповіді.");
+      }
+    } catch (error) {
+      setMenuError(
+        error instanceof Error
+          ? `Не вдалося згенерувати меню. ${error.message}`
+          : "Не вдалося згенерувати меню. Спробуйте ще раз.",
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -186,19 +237,46 @@ function Landing() {
               Замовляйте нарізки, гарячі страви, фуршетні закуски та авторські торти. Ми
               приготуємо, оформимо та привеземо — вам залишиться лише насолоджуватися.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href="#menu"
-                className="inline-flex items-center gap-2 rounded-full px-8 py-4 text-base font-semibold btn-hero"
-              >
-                Скласти меню
-              </a>
-              <a
-                href="#about"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-6 py-4 text-base font-semibold text-foreground backdrop-blur hover:bg-white"
-              >
-                Дізнатись більше
-              </a>
+            <div className="mt-8 max-w-xl">
+              <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:flex-row">
+                <label htmlFor="event-description" className="sr-only">
+                  Опишіть вашу подію
+                </label>
+                <input
+                  id="event-description"
+                  value={eventDescription}
+                  onChange={(event) => setEventDescription(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void generateMenu();
+                  }}
+                  disabled={isGenerating}
+                  placeholder="Опишіть вашу подію, і ШІ складе меню..."
+                  className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
+                />
+                <button
+                  type="button"
+                  onClick={() => void generateMenu()}
+                  disabled={isGenerating || !eventDescription.trim()}
+                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isGenerating && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                  {isGenerating ? "ШІ аналізує..." : "Згенерувати меню"}
+                </button>
+              </div>
+
+              {(menuResponse || menuError) && (
+                <div
+                  className={`mt-4 whitespace-pre-wrap rounded-2xl border p-5 text-sm shadow-[var(--shadow-soft)] ${
+                    menuError
+                      ? "border-destructive/30 bg-destructive/10 text-destructive"
+                      : "border-brand-green/30 bg-card text-foreground"
+                  }`}
+                  role="status"
+                  aria-live="polite"
+                >
+                  {menuError || menuResponse}
+                </div>
+              )}
             </div>
 
             <div className="mt-10 flex flex-wrap gap-8 text-sm">
