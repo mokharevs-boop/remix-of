@@ -17,16 +17,16 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Наш Край — Кулінарія та святкові страви на замовлення" },
+      { title: "Опліс — Кулінарія та святкові страви на замовлення" },
       {
         name: "description",
         content:
-          "Замовляйте нарізки, гарячі страви, фуршетні закуски та святкові торти від мережі супермаркетів Наш Край. Свіжо, швидко, від шеф-кухарів.",
+          "Замовляйте нарізки, гарячі страви, фуршетні закуски та святкові торти від мережі супермаркетів Опліс. Свіжо, швидко, від шеф-кухарів.",
       },
-      { property: "og:title", content: "Наш Край — Святкова кулінарія на замовлення" },
+      { property: "og:title", content: "Опліс — Святкова кулінарія на замовлення" },
       {
         property: "og:description",
-        content: "Свіжі страви від шеф-кухарів Наш Край для вашого свята.",
+        content: "Свіжі страви від шеф-кухарів Опліс для вашого свята.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -112,7 +112,7 @@ function Landing() {
               <Leaf className="h-5 w-5" />
             </div>
             <div className="leading-tight">
-              <div className="font-display text-lg font-bold text-brand-green">Наш Край</div>
+              <div className="font-display text-lg font-bold text-brand-green">Опліс</div>
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Кулінарія
               </div>
@@ -173,12 +173,12 @@ function Landing() {
         <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8 lg:py-28">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-green/30 bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-green backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" /> Святкове меню від Наш Край
+              <Sparkles className="h-3.5 w-3.5" /> Святкове меню від Опліс
             </span>
             <h1 className="mt-6 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Святкуйте без турбот —{" "}
               <span className="bg-gradient-to-r from-brand-green to-brand-orange bg-clip-text text-transparent">
-                кулінарія Наш Край
+                кулінарія Опліс
               </span>{" "}
               для вашого свята
             </h1>
@@ -248,7 +248,7 @@ function Landing() {
             Про послугу
           </span>
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            Чому обирають кулінарію Наш Край
+            Чому обирають кулінарію Опліс
           </h2>
           <p className="mt-4 text-muted-foreground">
             Ми поєднуємо якість супермаркету з майстерністю ресторану. Кожна страва — це
@@ -442,7 +442,7 @@ function Landing() {
       {/* Footer */}
       <footer className="border-t border-border bg-background py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 text-sm text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
-          <div>© {new Date().getFullYear()} Наш Край. Кулінарія для свята.</div>
+          <div>© {new Date().getFullYear()} Опліс. Кулінарія для свята.</div>
           <div>Made with 💚🧡 in Ukraine</div>
         </div>
       </footer>
@@ -454,7 +454,7 @@ function Landing() {
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-display font-bold">Голосовий помічник</div>
-                <div className="text-xs text-muted-foreground">Наш Край · онлайн</div>
+                <div className="text-xs text-muted-foreground">Опліс · онлайн</div>
               </div>
               <button
                 onClick={() => setVoiceOpen(false)}
