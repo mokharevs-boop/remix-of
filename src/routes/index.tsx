@@ -14,6 +14,8 @@ import {
   X,
   LoaderCircle,
 } from "lucide-react";
+import { Cart } from "@/components/Cart";
+import { mergeCartItems, parseCartItems, type CartItem } from "@/components/cart-types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
