@@ -345,6 +345,29 @@ function Landing() {
         </div>
       </section>
 
+      {/* Cart */}
+      <section id="cart" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-8 max-w-2xl">
+          <span className="text-sm font-semibold uppercase tracking-widest text-brand-orange">
+            Кошик
+          </span>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Ваше замовлення</h2>
+          <p className="mt-3 text-muted-foreground">
+            Товари, підібрані ШІ, з'являються тут автоматично. Змінюйте кількість — суми та
+            вага перераховуються миттєво.
+          </p>
+        </div>
+
+        <Cart
+          items={cartItems}
+          onQuantityChange={updateQuantity}
+          onRemove={removeItem}
+          onCheckout={() => {
+            document.getElementById("contacts")?.scrollIntoView({ behavior: "smooth" });
+          }}
+        />
+      </section>
+
       {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
