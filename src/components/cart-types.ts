@@ -73,3 +73,48 @@ export function formatWeight(grams: number): string {
 export function formatPrice(value: number): string {
   return `${value.toLocaleString("uk-UA", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ₴`;
 }
+
+export type MenuCategory = {
+  id: string;
+  title: string;
+  description?: string;
+  items: CartItem[];
+};
+
+/** Розбирає структурований JSON з масивом categories у категорії з товарами. */
+export function parseMenuCategories(payload: unknown): MenuCategory[] {
+  let raw: unknown = payload;
+
+  if (Array.isArray(raw) && raw.length > 0 && raw[0] && typeof raw[0] === "object") {
+    const first = raw[0] as Record<string, unknown>;
+    if (first.categories || first.output || first.data) raw = first;
+  }
+
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const obj = raw as Record<string, unknown>;
+    const nested = obj.categories ?? obj.output ?? obj.data ?? obj.menu ?? obj.result;
+    raw = nested ?? [];
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      const inner = raw as Record<string, unknown>;
+      raw = inner.categories ?? [];
+    }
+  }
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === "object")
+    .map((entry, index) => {
+      const title = String(
+        entry.category ?? entry.name ?? entry.title ?? `Категорія ${index + 1}`,
+      );
+      const itemsRaw = entry.items ?? entry.products ?? entry.dishes ?? [];
+      return {
+        id: String(entry.id ?? title ?? index),
+        title,
+        description:
+          typeof entry.description === "string" ? (entry.description as string) : undefined,
+        items: parseCartItems(itemsRaw),
+      } satisfies MenuCategory;
+    })
+    .filter((category) => category.items.length > 0);
+}
