@@ -15,7 +15,14 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { Cart } from "@/components/Cart";
-import { mergeCartItems, parseCartItems, type CartItem } from "@/components/cart-types";
+import { MenuResults } from "@/components/MenuResults";
+import {
+  mergeCartItems,
+  parseCartItems,
+  parseMenuCategories,
+  type CartItem,
+  type MenuCategory,
+} from "@/components/cart-types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -109,6 +116,7 @@ function Landing() {
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
 
   const updateQuantity = (sku: string, quantity: number) => {
     setCartItems((prev) =>
@@ -122,6 +130,11 @@ function Landing() {
     setCartItems((prev) => prev.filter((item) => item.sku !== sku));
   };
 
+  const addItems = (items: CartItem[]) => {
+    if (items.length === 0) return;
+    setCartItems((prev) => mergeCartItems(prev, items));
+  };
+
   const generateMenu = async () => {
     const message = eventDescription.trim();
     if (!message || isGenerating) return;
@@ -129,6 +142,7 @@ function Landing() {
     setIsGenerating(true);
     setMenuResponse("");
     setMenuError("");
+    setMenuCategories([]);
 
     try {
       const response = await fetch("https://n8n58127.hostkey.in/webhook-test/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
@@ -138,7 +152,7 @@ function Landing() {
       });
 
       const contentType = response.headers.get("content-type") ?? "";
-      const result: unknown = contentType.includes("application/json")
+      const rawResult: unknown = contentType.includes("application/json")
         ? await response.json()
         : await response.text();
 
@@ -146,27 +160,42 @@ function Landing() {
         throw new Error(`Сервер повернув помилку ${response.status}`);
       }
 
-      const newItems = parseCartItems(result);
-      if (newItems.length > 0) {
-        setCartItems((prev) => mergeCartItems(prev, newItems));
+      let result: unknown = rawResult;
+      if (typeof rawResult === "string") {
+        try {
+          result = JSON.parse(rawResult) as unknown;
+        } catch {
+          result = rawResult;
+        }
       }
 
-      if (typeof result === "string") {
-        setMenuResponse(result);
-      } else if (result && typeof result === "object") {
-        const payload = Array.isArray(result)
-          ? ({} as Record<string, unknown>)
-          : (result as Record<string, unknown>);
-        const answer = payload.answer ?? payload.message ?? payload.response ?? payload.output;
-        setMenuResponse(
-          typeof answer === "string"
-            ? answer
-            : newItems.length > 0
-              ? `Готово! Додано ${newItems.length} позицій до кошика.`
-              : JSON.stringify(result, null, 2),
+      const categories = parseMenuCategories(result);
+      if (categories.length > 0) {
+        setMenuCategories(categories);
+        setCartItems((prev) =>
+          mergeCartItems(prev, categories.flatMap((category) => category.items)),
         );
+        setMenuResponse("");
       } else {
-        setMenuResponse("Меню згенеровано, але сервер не повернув текстової відповіді.");
+        const flatItems = parseCartItems(result);
+        if (flatItems.length > 0) {
+          setCartItems((prev) => mergeCartItems(prev, flatItems));
+          setMenuResponse(`Готово! Додано ${flatItems.length} позицій до кошика.`);
+        } else if (result && typeof result === "object") {
+          const payload = Array.isArray(result)
+            ? ({} as Record<string, unknown>)
+            : (result as Record<string, unknown>);
+          const answer = payload.answer ?? payload.message ?? payload.response ?? payload.output;
+          setMenuResponse(
+            typeof answer === "string"
+              ? answer
+              : "Меню згенеровано, але сервер не повернув позицій.",
+          );
+        } else if (typeof result === "string" && result.trim()) {
+          setMenuResponse(result);
+        } else {
+          setMenuResponse("Меню згенеровано, але сервер не повернув позицій.");
+        }
       }
     } catch (error) {
       setMenuError(
@@ -303,6 +332,13 @@ function Landing() {
                   {menuError || menuResponse}
                 </div>
               )}
+
+              <MenuResults
+                categories={menuCategories}
+                onAddItem={(item) => addItems([item])}
+                onAddCategory={(category) => addItems(category.items)}
+              />
+
             </div>
 
             <div className="mt-10 flex flex-wrap gap-8 text-sm">
