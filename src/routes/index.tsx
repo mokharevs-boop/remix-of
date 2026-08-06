@@ -332,6 +332,13 @@ function Landing() {
                   {menuError || menuResponse}
                 </div>
               )}
+
+              <MenuResults
+                categories={menuCategories}
+                onAddItem={(item) => addItems([item])}
+                onAddCategory={(category) => addItems(category.items)}
+              />
+
             </div>
 
             <div className="mt-10 flex flex-wrap gap-8 text-sm">
