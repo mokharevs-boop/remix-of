@@ -14,6 +14,8 @@ import {
   X,
   LoaderCircle,
 } from "lucide-react";
+import { Cart } from "@/components/Cart";
+import { mergeCartItems, parseCartItems, type CartItem } from "@/components/cart-types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -106,6 +108,19 @@ function Landing() {
   const [menuResponse, setMenuResponse] = useState("");
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  const updateQuantity = (sku: string, quantity: number) => {
+    setCartItems((prev) =>
+      quantity < 1
+        ? prev.filter((item) => item.sku !== sku)
+        : prev.map((item) => (item.sku === sku ? { ...item, quantity } : item)),
+    );
+  };
+
+  const removeItem = (sku: string) => {
+    setCartItems((prev) => prev.filter((item) => item.sku !== sku));
+  };
 
   const generateMenu = async () => {
     const message = eventDescription.trim();
@@ -131,13 +146,24 @@ function Landing() {
         throw new Error(`Сервер повернув помилку ${response.status}`);
       }
 
+      const newItems = parseCartItems(result);
+      if (newItems.length > 0) {
+        setCartItems((prev) => mergeCartItems(prev, newItems));
+      }
+
       if (typeof result === "string") {
         setMenuResponse(result);
       } else if (result && typeof result === "object") {
-        const payload = result as Record<string, unknown>;
+        const payload = Array.isArray(result)
+          ? ({} as Record<string, unknown>)
+          : (result as Record<string, unknown>);
         const answer = payload.answer ?? payload.message ?? payload.response ?? payload.output;
         setMenuResponse(
-          typeof answer === "string" ? answer : JSON.stringify(result, null, 2),
+          typeof answer === "string"
+            ? answer
+            : newItems.length > 0
+              ? `Готово! Додано ${newItems.length} позицій до кошика.`
+              : JSON.stringify(result, null, 2),
         );
       } else {
         setMenuResponse("Меню згенеровано, але сервер не повернув текстової відповіді.");
@@ -317,6 +343,29 @@ function Landing() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Cart */}
+      <section id="cart" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-8 max-w-2xl">
+          <span className="text-sm font-semibold uppercase tracking-widest text-brand-orange">
+            Кошик
+          </span>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Ваше замовлення</h2>
+          <p className="mt-3 text-muted-foreground">
+            Товари, підібрані ШІ, з'являються тут автоматично. Змінюйте кількість — суми та
+            вага перераховуються миттєво.
+          </p>
+        </div>
+
+        <Cart
+          items={cartItems}
+          onQuantityChange={updateQuantity}
+          onRemove={removeItem}
+          onCheckout={() => {
+            document.getElementById("contacts")?.scrollIntoView({ behavior: "smooth" });
+          }}
+        />
       </section>
 
       {/* About */}
