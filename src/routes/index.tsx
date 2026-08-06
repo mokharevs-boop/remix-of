@@ -108,6 +108,19 @@ function Landing() {
   const [menuResponse, setMenuResponse] = useState("");
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  const updateQuantity = (sku: string, quantity: number) => {
+    setCartItems((prev) =>
+      quantity < 1
+        ? prev.filter((item) => item.sku !== sku)
+        : prev.map((item) => (item.sku === sku ? { ...item, quantity } : item)),
+    );
+  };
+
+  const removeItem = (sku: string) => {
+    setCartItems((prev) => prev.filter((item) => item.sku !== sku));
+  };
 
   const generateMenu = async () => {
     const message = eventDescription.trim();
@@ -133,13 +146,24 @@ function Landing() {
         throw new Error(`Сервер повернув помилку ${response.status}`);
       }
 
+      const newItems = parseCartItems(result);
+      if (newItems.length > 0) {
+        setCartItems((prev) => mergeCartItems(prev, newItems));
+      }
+
       if (typeof result === "string") {
         setMenuResponse(result);
       } else if (result && typeof result === "object") {
-        const payload = result as Record<string, unknown>;
+        const payload = Array.isArray(result)
+          ? ({} as Record<string, unknown>)
+          : (result as Record<string, unknown>);
         const answer = payload.answer ?? payload.message ?? payload.response ?? payload.output;
         setMenuResponse(
-          typeof answer === "string" ? answer : JSON.stringify(result, null, 2),
+          typeof answer === "string"
+            ? answer
+            : newItems.length > 0
+              ? `Готово! Додано ${newItems.length} позицій до кошика.`
+              : JSON.stringify(result, null, 2),
         );
       } else {
         setMenuResponse("Меню згенеровано, але сервер не повернув текстової відповіді.");
