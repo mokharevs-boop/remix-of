@@ -15,7 +15,14 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { Cart } from "@/components/Cart";
-import { mergeCartItems, parseCartItems, type CartItem } from "@/components/cart-types";
+import { MenuResults } from "@/components/MenuResults";
+import {
+  mergeCartItems,
+  parseCartItems,
+  parseMenuCategories,
+  type CartItem,
+  type MenuCategory,
+} from "@/components/cart-types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
