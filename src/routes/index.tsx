@@ -343,8 +343,9 @@ function Landing() {
                     className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <option value="">Оберіть локацію Опліс</option>
-                    <option value="branch_001">Локація 001</option>
-                    <option value="branch_002">Локація 002</option>
+                    <option value="1edb6b5a-55fb-6864-9a0f-d54e0a9fe643">Опліс — Івано-Франківськ (вул. Мазепи, 168А)</option>
+                    <option value="1edb6b5a-b1b0-611e-a929-d11f2666a570">Опліс — Івано-Франківськ (вул. Дністровська, 3)</option>
+                    <option value="1edb6b5b-831e-60fc-bf42-a302e997617d">Опліс — Чернівці (вул. Героїв Майдану, 71)</option>
                   </select>
                 </div>
               </div>
