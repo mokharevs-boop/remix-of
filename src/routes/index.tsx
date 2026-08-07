@@ -112,11 +112,15 @@ function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [eventDescription, setEventDescription] = useState("");
+  const [branchId, setBranchId] = useState("");
   const [menuResponse, setMenuResponse] = useState("");
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
+
+  // Прихований ідентифікатор профілю, передається у кожному запиті.
+  const profileId = "profile_999";
 
   const updateQuantity = (sku: string, quantity: number) => {
     setCartItems((prev) =>
@@ -138,6 +142,10 @@ function Landing() {
   const generateMenu = async () => {
     const message = eventDescription.trim();
     if (!message || isGenerating) return;
+    if (!branchId) {
+      setMenuError("Оберіть локацію Опліс перед генерацією меню.");
+      return;
+    }
 
     setIsGenerating(true);
     setMenuResponse("");
@@ -148,7 +156,7 @@ function Landing() {
       const response = await fetch("https://n8n58127.hostkey.in/webhook-test/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, branchId, profileId }),
       });
 
       const contentType = response.headers.get("content-type") ?? "";
@@ -293,30 +301,52 @@ function Landing() {
               приготуємо, оформимо та привеземо — вам залишиться лише насолоджуватися.
             </p>
             <div className="mt-8 max-w-xl">
-              <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:flex-row">
-                <label htmlFor="event-description" className="sr-only">
-                  Опишіть вашу подію
-                </label>
-                <input
-                  id="event-description"
-                  value={eventDescription}
-                  onChange={(event) => setEventDescription(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") void generateMenu();
-                  }}
-                  disabled={isGenerating}
-                  placeholder="Опишіть вашу подію, і ШІ складе меню..."
-                  className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
-                />
-                <button
-                  type="button"
-                  onClick={() => void generateMenu()}
-                  disabled={isGenerating || !eventDescription.trim()}
-                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isGenerating && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                  {isGenerating ? "ШІ аналізує..." : "Згенерувати меню"}
-                </button>
+              <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <label htmlFor="event-description" className="sr-only">
+                    Опишіть вашу подію
+                  </label>
+                  <input
+                    id="event-description"
+                    value={eventDescription}
+                    onChange={(event) => setEventDescription(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") void generateMenu();
+                    }}
+                    disabled={isGenerating}
+                    placeholder="Опишіть вашу подію, і ШІ складе меню..."
+                    className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void generateMenu()}
+                    disabled={isGenerating || !eventDescription.trim()}
+                    className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isGenerating && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                    {isGenerating ? "ШІ аналізує..." : "Згенерувати меню"}
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <label
+                    htmlFor="branch-select"
+                    className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Оберіть локацію Опліс
+                  </label>
+                  <select
+                    id="branch-select"
+                    value={branchId}
+                    onChange={(event) => setBranchId(event.target.value)}
+                    disabled={isGenerating}
+                    className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <option value="">Оберіть локацію Опліс</option>
+                    <option value="branch_001">Локація 001</option>
+                    <option value="branch_002">Локація 002</option>
+                  </select>
+                </div>
               </div>
 
               {(menuResponse || menuError) && (
