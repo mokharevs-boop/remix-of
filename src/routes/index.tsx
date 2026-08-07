@@ -112,11 +112,15 @@ function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [eventDescription, setEventDescription] = useState("");
+  const [branchId, setBranchId] = useState("");
   const [menuResponse, setMenuResponse] = useState("");
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
+
+  // Прихований ідентифікатор профілю, передається у кожному запиті.
+  const profileId = "profile_999";
 
   const updateQuantity = (sku: string, quantity: number) => {
     setCartItems((prev) =>
