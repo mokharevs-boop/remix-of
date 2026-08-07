@@ -142,6 +142,10 @@ function Landing() {
   const generateMenu = async () => {
     const message = eventDescription.trim();
     if (!message || isGenerating) return;
+    if (!branchId) {
+      setMenuError("Оберіть локацію Опліс перед генерацією меню.");
+      return;
+    }
 
     setIsGenerating(true);
     setMenuResponse("");
@@ -152,7 +156,7 @@ function Landing() {
       const response = await fetch("https://n8n58127.hostkey.in/webhook-test/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, branchId, profileId }),
       });
 
       const contentType = response.headers.get("content-type") ?? "";
