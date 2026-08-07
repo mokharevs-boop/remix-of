@@ -301,30 +301,52 @@ function Landing() {
               приготуємо, оформимо та привеземо — вам залишиться лише насолоджуватися.
             </p>
             <div className="mt-8 max-w-xl">
-              <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:flex-row">
-                <label htmlFor="event-description" className="sr-only">
-                  Опишіть вашу подію
-                </label>
-                <input
-                  id="event-description"
-                  value={eventDescription}
-                  onChange={(event) => setEventDescription(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") void generateMenu();
-                  }}
-                  disabled={isGenerating}
-                  placeholder="Опишіть вашу подію, і ШІ складе меню..."
-                  className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
-                />
-                <button
-                  type="button"
-                  onClick={() => void generateMenu()}
-                  disabled={isGenerating || !eventDescription.trim()}
-                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isGenerating && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                  {isGenerating ? "ШІ аналізує..." : "Згенерувати меню"}
-                </button>
+              <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <label htmlFor="event-description" className="sr-only">
+                    Опишіть вашу подію
+                  </label>
+                  <input
+                    id="event-description"
+                    value={eventDescription}
+                    onChange={(event) => setEventDescription(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") void generateMenu();
+                    }}
+                    disabled={isGenerating}
+                    placeholder="Опишіть вашу подію, і ШІ складе меню..."
+                    className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void generateMenu()}
+                    disabled={isGenerating || !eventDescription.trim()}
+                    className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isGenerating && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                    {isGenerating ? "ШІ аналізує..." : "Згенерувати меню"}
+                  </button>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <label
+                    htmlFor="branch-select"
+                    className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
+                  >
+                    Оберіть локацію Опліс
+                  </label>
+                  <select
+                    id="branch-select"
+                    value={branchId}
+                    onChange={(event) => setBranchId(event.target.value)}
+                    disabled={isGenerating}
+                    className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <option value="">Оберіть локацію Опліс</option>
+                    <option value="branch_001">Локація 001</option>
+                    <option value="branch_002">Локація 002</option>
+                  </select>
+                </div>
               </div>
 
               {(menuResponse || menuError) && (
