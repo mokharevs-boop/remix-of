@@ -134,10 +134,33 @@ function Landing() {
     setCartItems((prev) => prev.filter((item) => item.sku !== sku));
   };
 
+  const updateCartComment = (sku: string, comment: string) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.sku === sku ? { ...item, pickerComment: comment } : item)),
+    );
+  };
+
+  const updateMenuComment = (categoryId: string, sku: string, comment: string) => {
+    setMenuCategories((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.map((item) =>
+                item.sku === sku ? { ...item, pickerComment: comment } : item,
+              ),
+            }
+          : category,
+      ),
+    );
+    updateCartComment(sku, comment);
+  };
+
   const addItems = (items: CartItem[]) => {
     if (items.length === 0) return;
     setCartItems((prev) => mergeCartItems(prev, items));
   };
+
 
   const generateMenu = async () => {
     const message = eventDescription.trim();
