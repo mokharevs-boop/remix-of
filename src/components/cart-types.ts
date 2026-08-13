@@ -74,8 +74,11 @@ export function mergeCartItems(current: CartItem[], incoming: CartItem[]): CartI
   const next = current.map((item) => ({ ...item }));
   for (const item of incoming) {
     const existing = next.find((i) => i.sku === item.sku);
-    if (existing) existing.quantity += item.quantity;
-    else next.push({ ...item });
+    if (existing) {
+      existing.quantity += item.quantity;
+      if (item.pickerComment) existing.pickerComment = item.pickerComment;
+    } else next.push({ ...item });
+
   }
   return next;
 }
