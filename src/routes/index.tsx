@@ -307,8 +307,8 @@ function Landing() {
         <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-orange/20 blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-brand-green/20 blur-3xl" />
 
-        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8 lg:py-28">
-          <div>
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+          <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-green/30 bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-green backdrop-blur">
               <Sparkles className="h-3.5 w-3.5" /> Святкове меню від Опліс
             </span>
@@ -386,15 +386,6 @@ function Landing() {
                   {menuError || menuResponse}
                 </div>
               )}
-
-              <MenuResults
-                categories={menuCategories}
-                onAddItem={(item) => addItems([item])}
-                onAddCategory={(category) => addItems(category.items)}
-                onCommentChange={updateMenuComment}
-              />
-
-
             </div>
 
             <div className="mt-10 flex flex-wrap gap-8 text-sm">
@@ -412,26 +403,37 @@ function Landing() {
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="relative">
-            <div className="relative mx-auto grid max-w-md grid-cols-2 gap-4">
-              <div className="col-span-2 rounded-3xl bg-white p-6 shadow-[var(--shadow-card)]">
-                <div className="mb-2 text-5xl">🍽️</div>
-                <div className="font-display text-lg font-bold">Святковий стіл</div>
-                <div className="text-sm text-muted-foreground">
-                  Готове рішення на 8–12 гостей за 2 950 ₴
-                </div>
+        {/* Generated menu results — full width */}
+        <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <MenuResults
+            categories={menuCategories}
+            onAddItem={(item) => addItems([item])}
+            onAddCategory={(category) => addItems(category.items)}
+            onCommentChange={updateMenuComment}
+          />
+        </div>
+
+        {/* Static promo banners below generated menu */}
+        <div className="relative mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-2xl grid-cols-2 gap-4">
+            <div className="col-span-2 rounded-3xl bg-white p-6 shadow-[var(--shadow-card)]">
+              <div className="mb-2 text-5xl">🍽️</div>
+              <div className="font-display text-lg font-bold">Святковий стіл</div>
+              <div className="text-sm text-muted-foreground">
+                Готове рішення на 8–12 гостей за 2 950 ₴
               </div>
-              <div className="rounded-3xl bg-brand-green p-6 text-white shadow-[var(--shadow-soft)]">
-                <div className="mb-2 text-4xl">🥗</div>
-                <div className="font-display font-bold">Свіжі салати</div>
-                <div className="text-sm opacity-90">щоденно</div>
-              </div>
-              <div className="rounded-3xl bg-brand-orange p-6 text-white shadow-[var(--shadow-warm)]">
-                <div className="mb-2 text-4xl">🎂</div>
-                <div className="font-display font-bold">Торти</div>
-                <div className="text-sm opacity-90">від кондитерів</div>
-              </div>
+            </div>
+            <div className="rounded-3xl bg-brand-green p-6 text-white shadow-[var(--shadow-soft)]">
+              <div className="mb-2 text-4xl">🥗</div>
+              <div className="font-display font-bold">Свіжі салати</div>
+              <div className="text-sm opacity-90">щоденно</div>
+            </div>
+            <div className="rounded-3xl bg-brand-orange p-6 text-white shadow-[var(--shadow-warm)]">
+              <div className="mb-2 text-4xl">🎂</div>
+              <div className="font-display font-bold">Торти</div>
+              <div className="text-sm opacity-90">від кондитерів</div>
             </div>
           </div>
         </div>
