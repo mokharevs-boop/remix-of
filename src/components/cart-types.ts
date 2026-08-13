@@ -54,9 +54,20 @@ export function parseCartItems(payload: unknown): CartItem[] {
         image: typeof entry.image === "string" ? entry.image : undefined,
         discount: toNumber(entry.discount ?? 0),
         emoji: typeof entry.emoji === "string" ? entry.emoji : undefined,
+        pickerComment:
+          typeof entry.picker_comment === "string"
+            ? (entry.picker_comment as string)
+            : typeof entry.pickerComment === "string"
+              ? (entry.pickerComment as string)
+              : typeof entry.comment === "string"
+                ? (entry.comment as string)
+                : undefined,
+        pieces: toNumber(entry.pieces ?? entry.pcs ?? entry.units ?? 0) || undefined,
+        unit: typeof entry.unit === "string" ? (entry.unit as string) : undefined,
       } satisfies CartItem;
     })
     .filter((item) => item.name.length > 0);
+
 }
 
 export function mergeCartItems(current: CartItem[], incoming: CartItem[]): CartItem[] {
