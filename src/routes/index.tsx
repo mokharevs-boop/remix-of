@@ -454,7 +454,9 @@ function Landing() {
           items={cartItems}
           onQuantityChange={updateQuantity}
           onRemove={removeItem}
+          onCommentChange={updateCartComment}
           onCheckout={() => {
+
             document.getElementById("contacts")?.scrollIntoView({ behavior: "smooth" });
           }}
         />
