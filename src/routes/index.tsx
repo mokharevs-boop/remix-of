@@ -391,7 +391,9 @@ function Landing() {
                 categories={menuCategories}
                 onAddItem={(item) => addItems([item])}
                 onAddCategory={(category) => addItems(category.items)}
+                onCommentChange={updateMenuComment}
               />
+
 
             </div>
 
