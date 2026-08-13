@@ -1,14 +1,21 @@
-import { Plus, Sparkles } from "lucide-react";
-import { formatPrice, formatWeight, type CartItem, type MenuCategory } from "./cart-types";
+import { Pencil, Plus, Sparkles } from "lucide-react";
+import { formatPrice, formatUnitLabel, type CartItem, type MenuCategory } from "./cart-types";
 
 type MenuResultsProps = {
   categories: MenuCategory[];
   onAddItem: (item: CartItem) => void;
   onAddCategory: (category: MenuCategory) => void;
+  onCommentChange?: (categoryId: string, sku: string, comment: string) => void;
 };
 
-export function MenuResults({ categories, onAddItem, onAddCategory }: MenuResultsProps) {
+export function MenuResults({
+  categories,
+  onAddItem,
+  onAddCategory,
+  onCommentChange,
+}: MenuResultsProps) {
   if (categories.length === 0) return null;
+
 
   const total = categories.reduce(
     (sum, category) =>
@@ -71,17 +78,38 @@ export function MenuResults({ categories, onAddItem, onAddCategory }: MenuResult
                   <div className="min-w-0">
                     <div className="font-semibold leading-snug">{item.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {item.packaging ?? (item.weight > 0 ? formatWeight(item.weight) : "порція")}
+                      {formatUnitLabel(item)}
                       {" · "}
                       {item.quantity} шт
                     </div>
                   </div>
                 </div>
 
+                <div>
+                  <label
+                    htmlFor={`comment-${category.id}-${item.sku}`}
+                    className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground"
+                  >
+                    <Pencil className="h-3.5 w-3.5 text-brand-orange" />
+                    Коментар для збиральника Сільпо
+                  </label>
+                  <textarea
+                    id={`comment-${category.id}-${item.sku}`}
+                    rows={2}
+                    value={item.pickerComment ?? ""}
+                    onChange={(e) => onCommentChange?.(category.id, item.sku, e.target.value)}
+                    placeholder="Напр.: покласти 10 окремих тістечок по 100 г"
+                    className="w-full resize-none rounded-xl border border-border bg-card px-3 py-2 text-xs outline-none transition focus:border-brand-green"
+                  />
+                </div>
+
                 <div className="mt-auto flex items-center justify-between gap-2">
-                  <span className="font-display font-bold text-brand-green">
-                    {formatPrice(item.price * item.quantity)}
-                  </span>
+                  <div>
+                    <span className="font-display font-bold text-brand-green">
+                      {formatPrice(item.price * item.quantity)}
+                    </span>
+                    <div className="text-[11px] text-muted-foreground">{formatUnitLabel(item)}</div>
+                  </div>
                   <button
                     type="button"
                     onClick={() => onAddItem(item)}
@@ -90,6 +118,7 @@ export function MenuResults({ categories, onAddItem, onAddCategory }: MenuResult
                     <Plus className="h-3.5 w-3.5" /> В кошик
                   </button>
                 </div>
+
               </li>
             ))}
           </ul>

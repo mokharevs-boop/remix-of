@@ -134,10 +134,33 @@ function Landing() {
     setCartItems((prev) => prev.filter((item) => item.sku !== sku));
   };
 
+  const updateCartComment = (sku: string, comment: string) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.sku === sku ? { ...item, pickerComment: comment } : item)),
+    );
+  };
+
+  const updateMenuComment = (categoryId: string, sku: string, comment: string) => {
+    setMenuCategories((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.map((item) =>
+                item.sku === sku ? { ...item, pickerComment: comment } : item,
+              ),
+            }
+          : category,
+      ),
+    );
+    updateCartComment(sku, comment);
+  };
+
   const addItems = (items: CartItem[]) => {
     if (items.length === 0) return;
     setCartItems((prev) => mergeCartItems(prev, items));
   };
+
 
   const generateMenu = async () => {
     const message = eventDescription.trim();
@@ -368,7 +391,9 @@ function Landing() {
                 categories={menuCategories}
                 onAddItem={(item) => addItems([item])}
                 onAddCategory={(category) => addItems(category.items)}
+                onCommentChange={updateMenuComment}
               />
+
 
             </div>
 
@@ -429,7 +454,9 @@ function Landing() {
           items={cartItems}
           onQuantityChange={updateQuantity}
           onRemove={removeItem}
+          onCommentChange={updateCartComment}
           onCheckout={() => {
+
             document.getElementById("contacts")?.scrollIntoView({ behavior: "smooth" });
           }}
         />

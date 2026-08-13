@@ -8,7 +8,11 @@ export type CartItem = {
   image?: string;
   discount?: number; // сума знижки за одиницю, ₴
   emoji?: string;
+  pickerComment?: string; // коментар для збиральника
+  pieces?: number; // кількість штук у позиції (для вагових товарів)
+  unit?: string; // одиниця виміру: kg, g, pcs...
 };
+
 
 const toNumber = (value: unknown): number => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -50,17 +54,31 @@ export function parseCartItems(payload: unknown): CartItem[] {
         image: typeof entry.image === "string" ? entry.image : undefined,
         discount: toNumber(entry.discount ?? 0),
         emoji: typeof entry.emoji === "string" ? entry.emoji : undefined,
+        pickerComment:
+          typeof entry.picker_comment === "string"
+            ? (entry.picker_comment as string)
+            : typeof entry.pickerComment === "string"
+              ? (entry.pickerComment as string)
+              : typeof entry.comment === "string"
+                ? (entry.comment as string)
+                : undefined,
+        pieces: toNumber(entry.pieces ?? entry.pcs ?? entry.units ?? 0) || undefined,
+        unit: typeof entry.unit === "string" ? (entry.unit as string) : undefined,
       } satisfies CartItem;
     })
     .filter((item) => item.name.length > 0);
+
 }
 
 export function mergeCartItems(current: CartItem[], incoming: CartItem[]): CartItem[] {
   const next = current.map((item) => ({ ...item }));
   for (const item of incoming) {
     const existing = next.find((i) => i.sku === item.sku);
-    if (existing) existing.quantity += item.quantity;
-    else next.push({ ...item });
+    if (existing) {
+      existing.quantity += item.quantity;
+      if (item.pickerComment) existing.pickerComment = item.pickerComment;
+    } else next.push({ ...item });
+
   }
   return next;
 }
@@ -117,4 +135,14 @@ export function parseMenuCategories(payload: unknown): MenuCategory[] {
       } satisfies MenuCategory;
     })
     .filter((category) => category.items.length > 0);
+}
+
+/** Зрозуміла вага/кількість штук: "1 кг (10 шт)". */
+export function formatUnitLabel(item: CartItem): string {
+  const parts: string[] = [];
+  if (item.weight > 0) parts.push(formatWeight(item.weight));
+  else if (item.packaging) parts.push(item.packaging);
+  if (item.pieces && item.pieces > 0) parts.push(`${Math.round(item.pieces)} шт`);
+  if (parts.length === 0) return item.packaging ?? "1 порція";
+  return parts.length > 1 ? `${parts[0]} (${parts[1]})` : parts[0];
 }
