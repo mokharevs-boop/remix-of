@@ -8,7 +8,11 @@ export type CartItem = {
   image?: string;
   discount?: number; // сума знижки за одиницю, ₴
   emoji?: string;
+  pickerComment?: string; // коментар для збиральника
+  pieces?: number; // кількість штук у позиції (для вагових товарів)
+  unit?: string; // одиниця виміру: kg, g, pcs...
 };
+
 
 const toNumber = (value: unknown): number => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
