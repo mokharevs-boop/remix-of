@@ -1,14 +1,21 @@
-import { Plus, Sparkles } from "lucide-react";
-import { formatPrice, formatWeight, type CartItem, type MenuCategory } from "./cart-types";
+import { Pencil, Plus, Sparkles } from "lucide-react";
+import { formatPrice, formatUnitLabel, type CartItem, type MenuCategory } from "./cart-types";
 
 type MenuResultsProps = {
   categories: MenuCategory[];
   onAddItem: (item: CartItem) => void;
   onAddCategory: (category: MenuCategory) => void;
+  onCommentChange?: (categoryId: string, sku: string, comment: string) => void;
 };
 
-export function MenuResults({ categories, onAddItem, onAddCategory }: MenuResultsProps) {
+export function MenuResults({
+  categories,
+  onAddItem,
+  onAddCategory,
+  onCommentChange,
+}: MenuResultsProps) {
   if (categories.length === 0) return null;
+
 
   const total = categories.reduce(
     (sum, category) =>
