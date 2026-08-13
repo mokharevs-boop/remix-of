@@ -133,3 +133,13 @@ export function parseMenuCategories(payload: unknown): MenuCategory[] {
     })
     .filter((category) => category.items.length > 0);
 }
+
+/** Зрозуміла вага/кількість штук: "1 кг (10 шт)". */
+export function formatUnitLabel(item: CartItem): string {
+  const parts: string[] = [];
+  if (item.weight > 0) parts.push(formatWeight(item.weight));
+  else if (item.packaging) parts.push(item.packaging);
+  if (item.pieces && item.pieces > 0) parts.push(`${Math.round(item.pieces)} шт`);
+  if (parts.length === 0) return item.packaging ?? "1 порція";
+  return parts.length > 1 ? `${parts[0]} (${parts[1]})` : parts[0];
+}
