@@ -47,7 +47,8 @@ export function Cart({
         ) : (
           <ul className="divide-y divide-border">
             {items.map((item) => (
-              <li key={item.sku} className="flex flex-wrap items-center gap-4 py-4">
+              <li key={item.sku} className="py-4">
+                <div className="flex flex-wrap items-center gap-4">
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-muted text-2xl">
                   {item.image ? (
                     <img
@@ -64,7 +65,7 @@ export function Cart({
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-semibold">{item.name}</div>
                   <div className="text-xs text-muted-foreground">
-                    {item.packaging ?? formatWeight(item.weight)} · SKU {item.sku}
+                    {formatUnitLabel(item)} · SKU {item.sku}
                   </div>
                 </div>
 
@@ -88,8 +89,11 @@ export function Cart({
                   </button>
                 </div>
 
-                <div className="w-24 text-right font-display font-bold text-brand-green">
-                  {formatPrice(item.price * item.quantity)}
+                <div className="w-24 text-right">
+                  <div className="font-display font-bold text-brand-green">
+                    {formatPrice(item.price * item.quantity)}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">{formatUnitLabel(item)}</div>
                 </div>
 
                 <button
@@ -100,7 +104,27 @@ export function Cart({
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
+                </div>
+
+                <div className="mt-3 sm:pl-20">
+                  <label
+                    htmlFor={`cart-comment-${item.sku}`}
+                    className="mb-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground"
+                  >
+                    <Pencil className="h-3.5 w-3.5 text-brand-orange" />
+                    Коментар для збиральника Сільпо
+                  </label>
+                  <textarea
+                    id={`cart-comment-${item.sku}`}
+                    rows={2}
+                    value={item.pickerComment ?? ""}
+                    onChange={(e) => onCommentChange?.(item.sku, e.target.value)}
+                    placeholder="Напр.: покласти 10 окремих тістечок по 100 г"
+                    className="w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-xs outline-none transition focus:border-brand-green"
+                  />
+                </div>
               </li>
+
             ))}
           </ul>
         )}
