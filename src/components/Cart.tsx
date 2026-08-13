@@ -1,6 +1,7 @@
-import { Minus, Plus, ShoppingBasket, Trash2 } from "lucide-react";
+import { Minus, Pencil, Plus, ShoppingBasket, Trash2 } from "lucide-react";
 import {
   formatPrice,
+  formatUnitLabel,
   formatWeight,
   type CartItem,
 } from "./cart-types";
@@ -10,9 +11,17 @@ type CartProps = {
   onQuantityChange: (sku: string, quantity: number) => void;
   onRemove: (sku: string) => void;
   onCheckout?: () => void;
+  onCommentChange?: (sku: string, comment: string) => void;
 };
 
-export function Cart({ items, onQuantityChange, onRemove, onCheckout }: CartProps) {
+export function Cart({
+  items,
+  onQuantityChange,
+  onRemove,
+  onCheckout,
+  onCommentChange,
+}: CartProps) {
+
   const itemsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const totalWeight = items.reduce((sum, i) => sum + i.weight * i.quantity, 0);
   const discountTotal = items.reduce((sum, i) => sum + (i.discount ?? 0) * i.quantity, 0);
