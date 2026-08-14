@@ -13,6 +13,7 @@ import {
   Menu as MenuIcon,
   X,
   LoaderCircle,
+  Lightbulb,
 } from "lucide-react";
 import { Cart } from "@/components/Cart";
 import { MenuResults } from "@/components/MenuResults";
@@ -118,6 +119,7 @@ function Landing() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
+  const [menuInfo, setMenuInfo] = useState("");
 
   // Прихований ідентифікатор профілю, передається у кожному запиті.
   const profileId = "profile_999";
