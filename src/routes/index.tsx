@@ -180,6 +180,7 @@ function Landing() {
 
     setIsGenerating(true);
     setMenuResponse("");
+    setMenuInfo("");
     setMenuError("");
     setMenuCategories([]);
 
