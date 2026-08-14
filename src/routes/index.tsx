@@ -225,7 +225,11 @@ function Landing() {
           const payload = Array.isArray(result)
             ? ({} as Record<string, unknown>)
             : (result as Record<string, unknown>);
-          const answer = payload.answer ?? payload.message ?? payload.response ?? payload.output;
+          const cartStatus =
+            typeof payload.cart_status === "string" ? payload.cart_status : undefined;
+          const backendMessage =
+            typeof payload.message === "string" ? payload.message : undefined;
+          const answer = payload.answer ?? payload.response ?? payload.output;
           setMenuResponse(
             typeof answer === "string"
               ? answer
