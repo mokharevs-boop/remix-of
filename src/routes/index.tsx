@@ -234,9 +234,9 @@ function Landing() {
             setMenuInfo(backendMessage ?? (typeof answer === "string" ? answer : ""));
           } else if (typeof answer === "string") {
             setMenuResponse(answer);
-          } else if (typeof result === "string" && result.trim()) {
-            setMenuResponse(result);
           }
+        } else if (typeof result === "string" && result.trim()) {
+          setMenuResponse(result);
         }
       }
     } catch (error) {
