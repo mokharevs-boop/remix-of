@@ -109,6 +109,12 @@ const reviews = [
   },
 ];
 
+const suggestionChips = [
+  "🎂 Дитячий день народження на 6 дітей",
+  "🍕 Піца-паті для друзів на 4 осіб",
+  "🥩 М'ясні делікатеси та гриль на 5 гостей",
+];
+
 function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
