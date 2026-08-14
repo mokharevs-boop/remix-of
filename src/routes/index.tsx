@@ -237,16 +237,6 @@ function Landing() {
           } else if (typeof result === "string" && result.trim()) {
             setMenuResponse(result);
           }
-          // setMenuResponse(
-            typeof answer === "string"
-              ? answer
-              : "Меню згенеровано, але сервер не повернув позицій.",
-          );
-        } else if (typeof result === "string" && result.trim()) {
-          setMenuResponse(result);
-        } else {
-          setMenuResponse("Меню згенеровано, але сервер не повернув позицій.");
-        }
       }
     } catch (error) {
       setMenuError(
