@@ -1,5 +1,12 @@
 import { Pencil, Plus, Sparkles } from "lucide-react";
-import { formatPrice, formatUnitLabel, type CartItem, type MenuCategory } from "./cart-types";
+import {
+  formatPrice,
+  formatPriceBreakdown,
+  formatUnitLabel,
+  getLineTotal,
+  type CartItem,
+  type MenuCategory,
+} from "./cart-types";
 
 type MenuResultsProps = {
   categories: MenuCategory[];
@@ -18,8 +25,7 @@ export function MenuResults({
 
 
   const total = categories.reduce(
-    (sum, category) =>
-      sum + category.items.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    (sum, category) => sum + category.items.reduce((acc, item) => acc + getLineTotal(item), 0),
     0,
   );
 
@@ -106,9 +112,11 @@ export function MenuResults({
                 <div className="mt-auto flex items-center justify-between gap-2">
                   <div>
                     <span className="font-display font-bold text-brand-green">
-                      {formatPrice(item.price * item.quantity)}
+                      {formatPrice(getLineTotal(item))}
                     </span>
-                    <div className="text-[11px] text-muted-foreground">{formatUnitLabel(item)}</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      {formatPriceBreakdown(item)}
+                    </div>
                   </div>
                   <button
                     type="button"
