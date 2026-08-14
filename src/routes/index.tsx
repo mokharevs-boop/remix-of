@@ -230,7 +230,14 @@ function Landing() {
           const backendMessage =
             typeof payload.message === "string" ? payload.message : undefined;
           const answer = payload.answer ?? payload.response ?? payload.output;
-          setMenuResponse(
+          if (cartStatus === "invalid" || cartStatus === "empty" || backendMessage) {
+            setMenuInfo(backendMessage ?? (typeof answer === "string" ? answer : ""));
+          } else if (typeof answer === "string") {
+            setMenuResponse(answer);
+          } else if (typeof result === "string" && result.trim()) {
+            setMenuResponse(result);
+          }
+          // setMenuResponse(
             typeof answer === "string"
               ? answer
               : "Меню згенеровано, але сервер не повернув позицій.",
