@@ -146,3 +146,31 @@ export function formatUnitLabel(item: CartItem): string {
   if (parts.length === 0) return item.packaging ?? "1 порція";
   return parts.length > 1 ? `${parts[0]} (${parts[1]})` : parts[0];
 }
+
+/** Чи ціна товару вказана за кілограм (ваговий товар). */
+export function isWeightPriced(item: CartItem): boolean {
+  return item.weight > 0 && /^(kg|кг|kilogram)$/i.test(item.unit ?? "kg");
+}
+
+/** Вартість однієї порції: для вагових — ціна за кг × вага порції. */
+export function getPortionPrice(item: CartItem): number {
+  if (isWeightPriced(item)) return item.price * (item.weight / 1000);
+  return item.price;
+}
+
+/** Підсумкова вартість позиції з урахуванням кількості порцій. */
+export function getLineTotal(item: CartItem): number {
+  return getPortionPrice(item) * item.quantity;
+}
+
+/** Підпис під сумою: "за 0.27 кг (889 ₴/кг)". */
+export function formatPriceBreakdown(item: CartItem): string {
+  if (isWeightPriced(item)) {
+    const kg = item.weight / 1000;
+    const kgLabel = `${kg.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} кг`;
+    const per = `${item.price.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} ₴/кг`;
+    const pieces = item.pieces && item.pieces > 0 ? `, ${Math.round(item.pieces)} шт` : "";
+    return `за ${kgLabel} (${per}${pieces})`;
+  }
+  return `за ${formatUnitLabel(item)} · ${formatPrice(item.price)}`;
+}
