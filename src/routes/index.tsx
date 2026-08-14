@@ -170,8 +170,8 @@ function Landing() {
   };
 
 
-  const generateMenu = async () => {
-    const message = eventDescription.trim();
+  const generateMenu = async (overrideMessage?: string) => {
+    const message = (overrideMessage ?? eventDescription).trim();
     if (!message || isGenerating) return;
     if (!branchId) {
       setMenuError("Оберіть локацію Опліс перед генерацією меню.");
