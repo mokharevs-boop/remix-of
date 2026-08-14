@@ -1,8 +1,10 @@
 import { Minus, Pencil, Plus, ShoppingBasket, Trash2 } from "lucide-react";
 import {
   formatPrice,
+  formatPriceBreakdown,
   formatUnitLabel,
   formatWeight,
+  getLineTotal,
   type CartItem,
 } from "./cart-types";
 
@@ -22,7 +24,7 @@ export function Cart({
   onCommentChange,
 }: CartProps) {
 
-  const itemsTotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const itemsTotal = items.reduce((sum, i) => sum + getLineTotal(i), 0);
   const totalWeight = items.reduce((sum, i) => sum + i.weight * i.quantity, 0);
   const discountTotal = items.reduce((sum, i) => sum + (i.discount ?? 0) * i.quantity, 0);
   const payable = Math.max(0, itemsTotal - discountTotal);
