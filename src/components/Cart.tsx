@@ -91,11 +91,13 @@ export function Cart({
                   </button>
                 </div>
 
-                <div className="w-24 text-right">
+                <div className="w-32 text-right">
                   <div className="font-display font-bold text-brand-green">
-                    {formatPrice(item.price * item.quantity)}
+                    {formatPrice(getLineTotal(item))}
                   </div>
-                  <div className="text-[11px] text-muted-foreground">{formatUnitLabel(item)}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {formatPriceBreakdown(item)}
+                  </div>
                 </div>
 
                 <button
