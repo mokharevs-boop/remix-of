@@ -384,17 +384,52 @@ function Landing() {
                 </div>
               </div>
 
-              {(menuResponse || menuError) && (
+              {menuError && (
                 <div
-                  className={`mt-4 whitespace-pre-wrap rounded-2xl border p-5 text-sm shadow-[var(--shadow-soft)] ${
-                    menuError
-                      ? "border-destructive/30 bg-destructive/10 text-destructive"
-                      : "border-brand-green/30 bg-card text-foreground"
-                  }`}
+                  className="mt-4 whitespace-pre-wrap rounded-2xl border border-destructive/30 bg-destructive/10 p-5 text-sm text-destructive shadow-[var(--shadow-soft)]"
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  {menuError}
+                </div>
+              )}
+
+              {menuInfo && (
+                <div className="mt-4 rounded-2xl border border-brand-orange/30 bg-amber-50/60 p-5 text-sm text-foreground shadow-[var(--shadow-soft)] dark:bg-amber-950/20">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="mt-0.5 h-5 w-5 shrink-0 text-brand-orange" />
+                    <div className="flex-1">
+                      <p className="whitespace-pre-wrap font-medium leading-relaxed">{menuInfo}</p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {suggestionChips.map((chip) => (
+                          <button
+                            key={chip}
+                            type="button"
+                            onClick={() => {
+                              setEventDescription(chip);
+                              setMenuInfo("");
+                              setMenuResponse("");
+                              setMenuError("");
+                              void generateMenu(chip);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-brand-orange/30 bg-white/70 px-3 py-1.5 text-xs font-semibold text-foreground transition hover:bg-brand-orange/10 hover:text-brand-orange"
+                          >
+                            {chip}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {menuResponse && (
+                <div
+                  className="mt-4 whitespace-pre-wrap rounded-2xl border border-brand-green/30 bg-card p-5 text-sm text-foreground shadow-[var(--shadow-soft)]"
                   role="status"
                   aria-live="polite"
                 >
-                  {menuError || menuResponse}
+                  {menuResponse}
                 </div>
               )}
             </div>
