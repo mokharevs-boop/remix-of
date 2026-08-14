@@ -112,9 +112,11 @@ export function MenuResults({
                 <div className="mt-auto flex items-center justify-between gap-2">
                   <div>
                     <span className="font-display font-bold text-brand-green">
-                      {formatPrice(item.price * item.quantity)}
+                      {formatPrice(getLineTotal(item))}
                     </span>
-                    <div className="text-[11px] text-muted-foreground">{formatUnitLabel(item)}</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      {formatPriceBreakdown(item)}
+                    </div>
                   </div>
                   <button
                     type="button"
