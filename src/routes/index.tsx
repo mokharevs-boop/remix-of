@@ -237,6 +237,7 @@ function Landing() {
           } else if (typeof result === "string" && result.trim()) {
             setMenuResponse(result);
           }
+        }
       }
     } catch (error) {
       setMenuError(
