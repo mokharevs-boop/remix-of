@@ -2,7 +2,7 @@ import { Pencil, Plus, Sparkles } from "lucide-react";
 import {
   formatPrice,
   formatPriceBreakdown,
-  formatUnitLabel,
+  formatQuantityWithUnit,
   getLineTotal,
   type CartItem,
   type MenuCategory,
