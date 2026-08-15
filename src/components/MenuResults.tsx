@@ -2,7 +2,7 @@ import { Pencil, Plus, Sparkles } from "lucide-react";
 import {
   formatPrice,
   formatPriceBreakdown,
-  formatUnitLabel,
+  formatQuantityWithUnit,
   getLineTotal,
   type CartItem,
   type MenuCategory,
@@ -84,9 +84,7 @@ export function MenuResults({
                   <div className="min-w-0">
                     <div className="font-semibold leading-snug">{item.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {formatUnitLabel(item)}
-                      {" · "}
-                      {item.quantity} шт
+                      {formatQuantityWithUnit(item)}
                     </div>
                   </div>
                 </div>
@@ -112,7 +110,7 @@ export function MenuResults({
                 <div className="mt-auto flex items-center justify-between gap-2">
                   <div>
                     <span className="font-display font-bold text-brand-green">
-                      {formatPrice(getLineTotal(item))}
+                      {formatPrice(item.price)}
                     </span>
                     <div className="text-[11px] text-muted-foreground">
                       {formatPriceBreakdown(item)}
