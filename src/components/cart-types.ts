@@ -2,7 +2,7 @@ export type CartItem = {
   sku: string;
   name: string;
   price: number;
-  weight: number; // грам за одиницю
+  weight: number; // грам за одиницю (для старої вагової моделі)
   quantity: number;
   packaging?: string;
   image?: string;
@@ -11,6 +11,7 @@ export type CartItem = {
   pickerComment?: string; // коментар для збиральника
   pieces?: number; // кількість штук у позиції (для вагових товарів)
   unit?: string; // одиниця виміру: kg, g, pcs...
+  unit_price?: number; // ціна за одну одиницю (за шт або за кг)
 };
 
 
@@ -38,7 +39,12 @@ export function parseCartItems(payload: unknown): CartItem[] {
     .map((entry, index) => {
       const sku = String(entry.sku ?? entry.SKU ?? entry.id ?? `item-${index}`);
       const name = String(entry.name ?? entry.title ?? entry.product ?? "Товар");
-      const quantity = Math.max(1, Math.round(toNumber(entry.quantity ?? entry.qty ?? 1)) || 1);
+      const unit = typeof entry.unit === "string" ? entry.unit : undefined;
+      const isWeightUnit = /^(kg|кг|kilogram|г|грам|grams?|g)$/i.test(unit ?? "");
+      const rawQty = toNumber(entry.quantity ?? entry.qty ?? 1);
+      const quantity = isWeightUnit
+        ? Math.max(0.01, rawQty)
+        : Math.max(1, Math.round(rawQty) || 1);
       return {
         sku,
         name,
@@ -63,7 +69,8 @@ export function parseCartItems(payload: unknown): CartItem[] {
                 ? (entry.comment as string)
                 : undefined,
         pieces: toNumber(entry.pieces ?? entry.pcs ?? entry.units ?? 0) || undefined,
-        unit: typeof entry.unit === "string" ? (entry.unit as string) : undefined,
+        unit,
+        unit_price: toNumber(entry.unit_price ?? entry.unitPrice ?? 0) || undefined,
       } satisfies CartItem;
     })
     .filter((item) => item.name.length > 0);
@@ -137,6 +144,35 @@ export function parseMenuCategories(payload: unknown): MenuCategory[] {
     .filter((category) => category.items.length > 0);
 }
 
+/** Визначає, чи товар є штучним (піца, бургер, сендвіч тощо). */
+export function isPieceItem(item: CartItem): boolean {
+  const unit = (item.unit ?? "").toLowerCase();
+  if (
+    /^(шт|pcs|pieces?|piece|піца|піци|бургер|сендвіч|sandwich|burger|pizza|item|unit|порція)$/i.test(
+      unit,
+    )
+  ) {
+    return true;
+  }
+  if (/^(kg|кг|kilogram|г|грам|grams?|g)$/i.test(unit)) {
+    return false;
+  }
+  return !(item.weight > 0);
+}
+
+/** Кількість з одиницею виміру: "10 шт" або "0.27 кг". */
+export function formatQuantityWithUnit(item: CartItem): string {
+  if (isPieceItem(item)) {
+    return `${Math.round(item.quantity)} шт`;
+  }
+  const qty = item.quantity || 0;
+  const hasFraction = qty % 1 !== 0;
+  return `${qty.toLocaleString("uk-UA", {
+    minimumFractionDigits: hasFraction ? 2 : 0,
+    maximumFractionDigits: 2,
+  })} кг`;
+}
+
 /** Зрозуміла вага/кількість штук: "1 кг (10 шт)". */
 export function formatUnitLabel(item: CartItem): string {
   const parts: string[] = [];
@@ -158,13 +194,29 @@ export function getPortionPrice(item: CartItem): number {
   return item.price;
 }
 
-/** Підсумкова вартість позиції з урахуванням кількості порцій. */
+/** Підсумкова вартість позиції. Якщо є unit_price — item.price вже підсумкова. */
 export function getLineTotal(item: CartItem): number {
+  if (item.unit_price && item.unit_price > 0) return item.price;
   return getPortionPrice(item) * item.quantity;
 }
 
-/** Підпис під сумою: "за 0.27 кг (889 ₴/кг)". */
+/** Підпис під сумою: "за 0.27 кг (889 грн/кг)" або "за 10 шт (120 грн/шт)". */
 export function formatPriceBreakdown(item: CartItem): string {
+  if (item.unit_price && item.unit_price > 0) {
+    const unitPrice = item.unit_price.toLocaleString("uk-UA", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+    if (isPieceItem(item)) {
+      return `за ${Math.round(item.quantity)} шт (${unitPrice} грн/шт)`;
+    }
+    const qty = item.quantity.toLocaleString("uk-UA", {
+      minimumFractionDigits: item.quantity % 1 === 0 ? 0 : 2,
+      maximumFractionDigits: 2,
+    });
+    return `за ${qty} кг (${unitPrice} грн/кг)`;
+  }
+
   if (isWeightPriced(item)) {
     const kg = item.weight / 1000;
     const kgLabel = `${kg.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} кг`;
@@ -172,5 +224,6 @@ export function formatPriceBreakdown(item: CartItem): string {
     const pieces = item.pieces && item.pieces > 0 ? `, ${Math.round(item.pieces)} шт` : "";
     return `за ${kgLabel} (${per}${pieces})`;
   }
+
   return `за ${formatUnitLabel(item)} · ${formatPrice(item.price)}`;
 }
