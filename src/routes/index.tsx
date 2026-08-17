@@ -383,21 +383,56 @@ function Landing() {
             </p>
             <div className="mt-8 max-w-xl">
               <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
+                {dialog.length > 0 && (
+                  <div
+                    className="max-h-64 space-y-2 overflow-y-auto rounded-xl bg-muted/40 p-3"
+                    aria-live="polite"
+                  >
+                    {dialog.map((turn) => (
+                      <div
+                        key={turn.id}
+                        className={
+                          turn.role === "user"
+                            ? "ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-brand-green px-3 py-2 text-xs text-white"
+                            : "mr-auto max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-bl-sm border border-border bg-background px-3 py-2 text-xs"
+                        }
+                      >
+                        {turn.role === "bot" && (
+                          <span className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-orange">
+                            ШІ-асистент Опліс
+                          </span>
+                        )}
+                        {turn.text}
+                      </div>
+                    ))}
+                    {isGenerating && (
+                      <div className="mr-auto inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
+                        <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> ШІ друкує...
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <label htmlFor="event-description" className="sr-only">
                     Опишіть вашу подію
                   </label>
                   <input
                     id="event-description"
+                    ref={inputRef}
                     value={eventDescription}
                     onChange={(event) => setEventDescription(event.target.value)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") void generateMenu();
                     }}
                     disabled={isGenerating}
-                    placeholder="Опишіть вашу подію, і ШІ складе меню..."
+                    placeholder={
+                      menuInfo
+                        ? "Напишіть відповідь на запитання ШІ..."
+                        : "Опишіть вашу подію, і ШІ складе меню..."
+                    }
                     className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
                   />
+
                   <button
                     type="button"
                     onClick={() => void generateMenu()}
