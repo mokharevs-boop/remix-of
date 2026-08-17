@@ -115,6 +115,8 @@ const suggestionChips = [
   "🥩 М'ясні делікатеси та гриль на 5 гостей",
 ];
 
+type DialogTurn = { id: string; role: "user" | "bot"; text: string };
+
 function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -126,9 +128,14 @@ function Landing() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
   const [menuInfo, setMenuInfo] = useState("");
+  const [dialog, setDialog] = useState<DialogTurn[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Прихований ідентифікатор профілю, передається у кожному запиті.
-  const profileId = "profile_999";
+  // Стабільний ідентифікатор сесії — однаковий для всіх запитів діалогу.
+  const [profileId] = useState(
+    () => `profile_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`,
+  );
+
 
   const updateQuantity = (sku: string, quantity: number) => {
     setCartItems((prev) =>
