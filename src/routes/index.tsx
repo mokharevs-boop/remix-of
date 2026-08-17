@@ -213,6 +213,9 @@ function Landing() {
       return;
     }
 
+    const activeConversationId = conversationId || ensureConversationId();
+    if (!conversationId) setConversationId(activeConversationId);
+
     setIsGenerating(true);
     setMenuResponse("");
     setMenuInfo("");
@@ -224,7 +227,12 @@ function Landing() {
       const response = await fetch("https://n8n58127.hostkey.in/webhook/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_query: message, branchId, profileId }),
+        body: JSON.stringify({
+          user_query: message,
+          branchId,
+          profileId,
+          conversationId: activeConversationId,
+        }),
       });
 
       const contentType = response.headers.get("content-type") ?? "";
@@ -404,6 +412,17 @@ function Landing() {
             </p>
             <div className="mt-8 max-w-xl">
               <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
+                {dialog.length > 0 && (
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={startNewChat}
+                      className="rounded-full border border-border px-3 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Новий чат
+                    </button>
+                  </div>
+                )}
                 {dialog.length > 0 && (
                   <div
                     className="max-h-64 space-y-2 overflow-y-auto rounded-xl bg-muted/40 p-3"
