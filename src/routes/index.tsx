@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ensureConversationId, resetConversationId } from "@/lib/conversation";
 import {
   Mic,
   ChefHat,
@@ -129,12 +130,32 @@ function Landing() {
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
   const [menuInfo, setMenuInfo] = useState("");
   const [dialog, setDialog] = useState<DialogTurn[]>([]);
+  const [conversationId, setConversationId] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Стабільний ідентифікатор сесії — однаковий для всіх запитів діалогу.
   const [profileId] = useState(
     () => `profile_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`,
   );
+
+  // conversationId живе в sessionStorage — стабільний після перезавантаження сторінки.
+  useEffect(() => {
+    setConversationId(ensureConversationId());
+  }, []);
+
+  const startNewChat = () => {
+    setConversationId(resetConversationId());
+    setDialog([]);
+    setMenuCategories([]);
+    setCartItems([]);
+    setMenuResponse("");
+    setMenuInfo("");
+    setMenuError("");
+    setEventDescription("");
+    inputRef.current?.focus();
+  };
+
+
 
 
   const updateQuantity = (sku: string, quantity: number) => {
@@ -192,6 +213,9 @@ function Landing() {
       return;
     }
 
+    const activeConversationId = conversationId || ensureConversationId();
+    if (!conversationId) setConversationId(activeConversationId);
+
     setIsGenerating(true);
     setMenuResponse("");
     setMenuInfo("");
@@ -203,7 +227,12 @@ function Landing() {
       const response = await fetch("https://n8n58127.hostkey.in/webhook/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_query: message, branchId, profileId }),
+        body: JSON.stringify({
+          user_query: message,
+          branchId,
+          profileId,
+          conversationId: activeConversationId,
+        }),
       });
 
       const contentType = response.headers.get("content-type") ?? "";
@@ -383,6 +412,17 @@ function Landing() {
             </p>
             <div className="mt-8 max-w-xl">
               <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
+                {dialog.length > 0 && (
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={startNewChat}
+                      className="rounded-full border border-border px-3 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Новий чат
+                    </button>
+                  </div>
+                )}
                 {dialog.length > 0 && (
                   <div
                     className="max-h-64 space-y-2 overflow-y-auto rounded-xl bg-muted/40 p-3"
