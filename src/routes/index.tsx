@@ -129,12 +129,32 @@ function Landing() {
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
   const [menuInfo, setMenuInfo] = useState("");
   const [dialog, setDialog] = useState<DialogTurn[]>([]);
+  const [conversationId, setConversationId] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Стабільний ідентифікатор сесії — однаковий для всіх запитів діалогу.
   const [profileId] = useState(
     () => `profile_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`,
   );
+
+  // conversationId живе в sessionStorage — стабільний після перезавантаження сторінки.
+  useEffect(() => {
+    setConversationId(ensureConversationId());
+  }, []);
+
+  const startNewChat = () => {
+    setConversationId(resetConversationId());
+    setDialog([]);
+    setMenuCategories([]);
+    setCartItems([]);
+    setMenuResponse("");
+    setMenuInfo("");
+    setMenuError("");
+    setEventDescription("");
+    inputRef.current?.focus();
+  };
+
+
 
 
   const updateQuantity = (sku: string, quantity: number) => {
