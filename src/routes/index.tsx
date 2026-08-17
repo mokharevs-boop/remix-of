@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Mic,
   ChefHat,
@@ -115,6 +115,8 @@ const suggestionChips = [
   "🥩 М'ясні делікатеси та гриль на 5 гостей",
 ];
 
+type DialogTurn = { id: string; role: "user" | "bot"; text: string };
+
 function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -126,9 +128,14 @@ function Landing() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
   const [menuInfo, setMenuInfo] = useState("");
+  const [dialog, setDialog] = useState<DialogTurn[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Прихований ідентифікатор профілю, передається у кожному запиті.
-  const profileId = "profile_999";
+  // Стабільний ідентифікатор сесії — однаковий для всіх запитів діалогу.
+  const [profileId] = useState(
+    () => `profile_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`,
+  );
+
 
   const updateQuantity = (sku: string, quantity: number) => {
     setCartItems((prev) =>
@@ -170,6 +177,13 @@ function Landing() {
   };
 
 
+  const pushTurn = (role: DialogTurn["role"], text: string) => {
+    setDialog((prev) => [
+      ...prev,
+      { id: `${role}-${prev.length}-${Date.now()}`, role, text },
+    ]);
+  };
+
   const generateMenu = async (overrideMessage?: string) => {
     const message = (overrideMessage ?? eventDescription).trim();
     if (!message || isGenerating) return;
@@ -182,7 +196,8 @@ function Landing() {
     setMenuResponse("");
     setMenuInfo("");
     setMenuError("");
-    setMenuCategories([]);
+    pushTurn("user", message);
+    setEventDescription("");
 
     try {
       const response = await fetch("https://n8n58127.hostkey.in/webhook/b8f22d11-2c8e-4df3-92c9-8227f2f515e4", {
@@ -209,36 +224,66 @@ function Landing() {
         }
       }
 
+      // Нормалізуємо: n8n інколи повертає масив із одним об'єктом.
+      const payloadSource =
+        Array.isArray(result) && result.length > 0 && result[0] && typeof result[0] === "object"
+          ? (result[0] as Record<string, unknown>)
+          : result && typeof result === "object" && !Array.isArray(result)
+            ? (result as Record<string, unknown>)
+            : undefined;
+
+      const rawValid = payloadSource?.is_valid ?? payloadSource?.isValid;
+      const isValid =
+        typeof rawValid === "boolean"
+          ? rawValid
+          : typeof rawValid === "string"
+            ? rawValid.toLowerCase() === "true"
+            : undefined;
+      const backendMessage =
+        typeof payloadSource?.message === "string" ? (payloadSource.message as string) : "";
+
+      // СЦЕНАРІЙ 1 — АІ ставить уточнююче запитання.
+      if (isValid === false) {
+        const question = backendMessage.trim() || "Уточніть, будь ласка, деталі вашої події.";
+        pushTurn("bot", question);
+        setMenuInfo(question);
+        setEventDescription("");
+        inputRef.current?.focus();
+        return;
+      }
+
+      // СЦЕНАРІЙ 2 — дані зібрані, рендеримо меню.
       const categories = parseMenuCategories(result);
       if (categories.length > 0) {
         setMenuCategories(categories);
         setCartItems((prev) =>
           mergeCartItems(prev, categories.flatMap((category) => category.items)),
         );
-        setMenuResponse("");
-      } else {
-        const flatItems = parseCartItems(result);
-        if (flatItems.length > 0) {
-          setCartItems((prev) => mergeCartItems(prev, flatItems));
-          setMenuResponse(`Готово! Додано ${flatItems.length} позицій до кошика.`);
-        } else if (result && typeof result === "object") {
-          const payload = Array.isArray(result)
-            ? ({} as Record<string, unknown>)
-            : (result as Record<string, unknown>);
-          const cartStatus =
-            typeof payload.cart_status === "string" ? payload.cart_status : undefined;
-          const backendMessage =
-            typeof payload.message === "string" ? payload.message : undefined;
-          const answer = payload.answer ?? payload.response ?? payload.output;
-          if (cartStatus === "invalid" || cartStatus === "empty" || backendMessage) {
-            setMenuInfo(backendMessage ?? (typeof answer === "string" ? answer : ""));
-          } else if (typeof answer === "string") {
-            setMenuResponse(answer);
-          }
-        } else if (typeof result === "string" && result.trim()) {
-          setMenuResponse(result);
-        }
+        pushTurn("bot", "Готово! Меню зібрано — перегляньте позиції нижче.");
+        return;
       }
+
+      const flatItems = parseCartItems(result);
+      if (flatItems.length > 0) {
+        setCartItems((prev) => mergeCartItems(prev, flatItems));
+        pushTurn("bot", `Готово! Додано ${flatItems.length} позицій до кошика.`);
+        return;
+      }
+
+      const answer = payloadSource?.answer ?? payloadSource?.response ?? payloadSource?.output;
+      const fallback =
+        backendMessage.trim() && backendMessage.trim().toLowerCase() !== "ok"
+          ? backendMessage.trim()
+          : typeof answer === "string"
+            ? answer
+            : typeof result === "string"
+              ? result.trim()
+              : "";
+      if (fallback) {
+        pushTurn("bot", fallback);
+        setMenuInfo(fallback);
+      }
+      inputRef.current?.focus();
     } catch (error) {
       setMenuError(
         error instanceof Error
@@ -247,8 +292,10 @@ function Landing() {
       );
     } finally {
       setIsGenerating(false);
+      inputRef.current?.focus();
     }
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -336,21 +383,56 @@ function Landing() {
             </p>
             <div className="mt-8 max-w-xl">
               <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
+                {dialog.length > 0 && (
+                  <div
+                    className="max-h-64 space-y-2 overflow-y-auto rounded-xl bg-muted/40 p-3"
+                    aria-live="polite"
+                  >
+                    {dialog.map((turn) => (
+                      <div
+                        key={turn.id}
+                        className={
+                          turn.role === "user"
+                            ? "ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-brand-green px-3 py-2 text-xs text-white"
+                            : "mr-auto max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-bl-sm border border-border bg-background px-3 py-2 text-xs"
+                        }
+                      >
+                        {turn.role === "bot" && (
+                          <span className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-brand-orange">
+                            ШІ-асистент Опліс
+                          </span>
+                        )}
+                        {turn.text}
+                      </div>
+                    ))}
+                    {isGenerating && (
+                      <div className="mr-auto inline-flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
+                        <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> ШІ друкує...
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <label htmlFor="event-description" className="sr-only">
                     Опишіть вашу подію
                   </label>
                   <input
                     id="event-description"
+                    ref={inputRef}
                     value={eventDescription}
                     onChange={(event) => setEventDescription(event.target.value)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") void generateMenu();
                     }}
                     disabled={isGenerating}
-                    placeholder="Опишіть вашу подію, і ШІ складе меню..."
+                    placeholder={
+                      menuInfo
+                        ? "Напишіть відповідь на запитання ШІ..."
+                        : "Опишіть вашу подію, і ШІ складе меню..."
+                    }
                     className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
                   />
+
                   <button
                     type="button"
                     onClick={() => void generateMenu()}
