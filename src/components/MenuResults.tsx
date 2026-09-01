@@ -1,4 +1,5 @@
-import { Pencil, Plus, Sparkles } from "lucide-react";
+import { Check, Pencil, Plus, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   formatPrice,
   formatPriceBreakdown,
@@ -21,8 +22,36 @@ export function MenuResults({
   onAddCategory,
   onCommentChange,
 }: MenuResultsProps) {
-  if (categories.length === 0) return null;
+  const [addedKeys, setAddedKeys] = useState<Record<string, boolean>>({});
+  const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  useEffect(
+    () => () => {
+      Object.values(timers.current).forEach(clearTimeout);
+    },
+    [],
+  );
+
+  const flashAdded = (keys: string[]) => {
+    setAddedKeys((prev) => {
+      const next = { ...prev };
+      keys.forEach((key) => (next[key] = true));
+      return next;
+    });
+    keys.forEach((key) => {
+      if (timers.current[key]) clearTimeout(timers.current[key]);
+      timers.current[key] = setTimeout(() => {
+        setAddedKeys((prev) => {
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+        delete timers.current[key];
+      }, 1600);
+    });
+  };
+
+  if (categories.length === 0) return null;
 
   const total = categories.reduce(
     (sum, category) => sum + category.items.reduce((acc, item) => acc + getLineTotal(item), 0),
@@ -55,10 +84,24 @@ export function MenuResults({
             </div>
             <button
               type="button"
-              onClick={() => onAddCategory(category)}
+              onClick={() => {
+                onAddCategory(category);
+                flashAdded([
+                  `cat-${category.id}`,
+                  ...category.items.map((i) => `${category.id}-${i.sku}`),
+                ]);
+              }}
               className="inline-flex items-center gap-1.5 rounded-full border border-brand-green/40 px-3 py-1.5 text-xs font-semibold text-brand-green transition hover:bg-brand-green/10"
             >
-              <Plus className="h-3.5 w-3.5" /> Додати всі
+              {addedKeys[`cat-${category.id}`] ? (
+                <>
+                  <Check className="h-3.5 w-3.5" /> Додано
+                </>
+              ) : (
+                <>
+                  <Plus className="h-3.5 w-3.5" /> Додати всі
+                </>
+              )}
             </button>
           </div>
 
@@ -116,13 +159,22 @@ export function MenuResults({
                       {formatPriceBreakdown(item)}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onAddItem(item)}
-                    className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold btn-hero"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> В кошик
-                  </button>
+                  {addedKeys[`${category.id}-${item.sku}`] ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-green bg-brand-green/10 px-3 py-2 text-xs font-semibold text-brand-green">
+                      <Check className="h-3.5 w-3.5" /> Додано
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onAddItem(item);
+                        flashAdded([`${category.id}-${item.sku}`]);
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold btn-hero"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> В кошик
+                    </button>
+                  )}
                 </div>
 
               </li>
