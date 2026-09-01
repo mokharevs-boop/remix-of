@@ -131,6 +131,7 @@ function Landing() {
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
   const [menuInfo, setMenuInfo] = useState("");
   const [dialog, setDialog] = useState<DialogTurn[]>([]);
