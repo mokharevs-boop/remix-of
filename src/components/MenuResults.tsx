@@ -84,10 +84,24 @@ export function MenuResults({
             </div>
             <button
               type="button"
-              onClick={() => onAddCategory(category)}
+              onClick={() => {
+                onAddCategory(category);
+                flashAdded([
+                  `cat-${category.id}`,
+                  ...category.items.map((i) => `${category.id}-${i.sku}`),
+                ]);
+              }}
               className="inline-flex items-center gap-1.5 rounded-full border border-brand-green/40 px-3 py-1.5 text-xs font-semibold text-brand-green transition hover:bg-brand-green/10"
             >
-              <Plus className="h-3.5 w-3.5" /> Додати всі
+              {addedKeys[`cat-${category.id}`] ? (
+                <>
+                  <Check className="h-3.5 w-3.5" /> Додано
+                </>
+              ) : (
+                <>
+                  <Plus className="h-3.5 w-3.5" /> Додати всі
+                </>
+              )}
             </button>
           </div>
 
