@@ -350,18 +350,34 @@ function Landing() {
             <a href="#contacts" className="text-sm font-medium hover:text-brand-green">Контакти</a>
           </nav>
 
-          <a
-            href="#menu"
-            className="hidden rounded-full px-5 py-2.5 text-sm font-semibold btn-brand md:inline-flex"
-          >
-            Скласти меню
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href="#menu"
+              className="hidden rounded-full px-5 py-2.5 text-sm font-semibold btn-brand md:inline-flex"
+            >
+              Скласти меню
+            </a>
 
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="rounded-lg p-2 md:hidden"
-            aria-label="Меню"
-          >
+            <button
+              type="button"
+              onClick={() => setCartOpen(true)}
+              aria-label={`Кошик, ${cartCount} позицій, ${formatPrice(cartTotal)}`}
+              className="relative inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-sm font-semibold transition hover:border-brand-green"
+            >
+              <ShoppingCart className="h-5 w-5 text-brand-green" />
+              <span className="hidden text-brand-green sm:inline">{formatPrice(cartTotal)}</span>
+              {cartCount > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-orange px-1 text-[11px] font-bold text-white shadow-[var(--shadow-warm)]">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="rounded-lg p-2 md:hidden"
+              aria-label="Меню"
+            >
             {menuOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
           </button>
         </div>
