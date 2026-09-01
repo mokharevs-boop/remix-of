@@ -137,6 +137,15 @@ function Landing() {
   const [dialog, setDialog] = useState<DialogTurn[]>([]);
   const [conversationId, setConversationId] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // Авто-прокручування чату до останнього повідомлення.
+  useEffect(() => {
+    const node = chatScrollRef.current;
+    if (node) {
+      node.scrollTo({ top: node.scrollHeight, behavior: "smooth" });
+    }
+  }, [dialog, isGenerating]);
 
   // Стабільний ідентифікатор сесії — однаковий для всіх запитів діалогу.
   const [profileId] = useState(
