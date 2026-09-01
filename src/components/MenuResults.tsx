@@ -1,4 +1,5 @@
-import { Pencil, Plus, Sparkles } from "lucide-react";
+import { Check, Pencil, Plus, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import {
   formatPrice,
   formatPriceBreakdown,
