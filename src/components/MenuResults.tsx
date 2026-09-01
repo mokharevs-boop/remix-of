@@ -22,8 +22,36 @@ export function MenuResults({
   onAddCategory,
   onCommentChange,
 }: MenuResultsProps) {
-  if (categories.length === 0) return null;
+  const [addedKeys, setAddedKeys] = useState<Record<string, boolean>>({});
+  const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  useEffect(
+    () => () => {
+      Object.values(timers.current).forEach(clearTimeout);
+    },
+    [],
+  );
+
+  const flashAdded = (keys: string[]) => {
+    setAddedKeys((prev) => {
+      const next = { ...prev };
+      keys.forEach((key) => (next[key] = true));
+      return next;
+    });
+    keys.forEach((key) => {
+      if (timers.current[key]) clearTimeout(timers.current[key]);
+      timers.current[key] = setTimeout(() => {
+        setAddedKeys((prev) => {
+          const next = { ...prev };
+          delete next[key];
+          return next;
+        });
+        delete timers.current[key];
+      }, 1600);
+    });
+  };
+
+  if (categories.length === 0) return null;
 
   const total = categories.reduce(
     (sum, category) => sum + category.items.reduce((acc, item) => acc + getLineTotal(item), 0),
