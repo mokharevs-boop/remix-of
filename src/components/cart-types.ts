@@ -130,7 +130,11 @@ export function parseMenuCategories(payload: unknown): MenuCategory[] {
     .filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === "object")
     .map((entry, index) => {
       const title = String(
-        entry.category ?? entry.name ?? entry.title ?? `Категорія ${index + 1}`,
+        entry.category_name ??
+          entry.category ??
+          entry.name ??
+          entry.title ??
+          `Категорія ${index + 1}`,
       );
       const itemsRaw = entry.items ?? entry.products ?? entry.dishes ?? [];
       return {
