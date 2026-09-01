@@ -378,8 +378,9 @@ function Landing() {
               className="rounded-lg p-2 md:hidden"
               aria-label="Меню"
             >
-            {menuOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-          </button>
+              {menuOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
 
         {menuOpen && (
