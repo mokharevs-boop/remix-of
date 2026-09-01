@@ -15,10 +15,14 @@ import {
   X,
   LoaderCircle,
   Lightbulb,
+  ShoppingCart,
 } from "lucide-react";
 import { Cart } from "@/components/Cart";
+import { CartSheet } from "@/components/CartSheet";
 import { MenuResults } from "@/components/MenuResults";
 import {
+  formatPrice,
+  getLineTotal,
   mergeCartItems,
   parseCartItems,
   parseMenuCategories,
