@@ -653,10 +653,16 @@ function Landing() {
           onQuantityChange={updateQuantity}
           onRemove={removeItem}
           onCommentChange={updateCartComment}
-          onCheckout={() => {
+          onCheckout={() => setCartOpen(true)}
+        />
 
-            document.getElementById("contacts")?.scrollIntoView({ behavior: "smooth" });
-          }}
+        <CartSheet
+          open={cartOpen}
+          onOpenChange={setCartOpen}
+          items={cartItems}
+          onQuantityChange={updateQuantity}
+          onRemove={removeItem}
+          onCommentChange={updateCartComment}
         />
       </section>
 
