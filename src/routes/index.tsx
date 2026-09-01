@@ -165,7 +165,7 @@ function Landing() {
 
   const updateQuantity = (sku: string, quantity: number) => {
     setCartItems((prev) =>
-      quantity < 1
+      quantity <= 0
         ? prev.filter((item) => item.sku !== sku)
         : prev.map((item) => (item.sku === sku ? { ...item, quantity } : item)),
     );
