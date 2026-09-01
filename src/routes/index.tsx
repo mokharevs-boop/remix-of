@@ -202,6 +202,12 @@ function Landing() {
     setCartItems((prev) => mergeCartItems(prev, items));
   };
 
+  const cartCount = cartItems.length;
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + Math.max(0, getLineTotal(item) - (item.discount ?? 0) * item.quantity),
+    0,
+  );
+
 
   const pushTurn = (role: DialogTurn["role"], text: string) => {
     setDialog((prev) => [
