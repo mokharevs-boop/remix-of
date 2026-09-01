@@ -159,13 +159,22 @@ export function MenuResults({
                       {formatPriceBreakdown(item)}
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onAddItem(item)}
-                    className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold btn-hero"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> В кошик
-                  </button>
+                  {addedKeys[`${category.id}-${item.sku}`] ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-green bg-brand-green/10 px-3 py-2 text-xs font-semibold text-brand-green">
+                      <Check className="h-3.5 w-3.5" /> Додано
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onAddItem(item);
+                        flashAdded([`${category.id}-${item.sku}`]);
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold btn-hero"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> В кошик
+                    </button>
+                  )}
                 </div>
 
               </li>
