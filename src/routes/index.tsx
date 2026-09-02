@@ -209,6 +209,14 @@ function Landing() {
   const addItems = (items: CartItem[]) => {
     if (items.length === 0) return;
     setCartItems((prev) => mergeCartItems(prev, items));
+    // Перенесені у кошик позиції зникають зі списку підібраного меню.
+    const addedSkus = new Set(items.map((item) => item.sku));
+    setMenuCategories((prev) =>
+      prev.map((category) => ({
+        ...category,
+        items: category.items.filter((item) => !addedSkus.has(item.sku)),
+      })),
+    );
   };
 
   const cartCount = cartItems.length;
