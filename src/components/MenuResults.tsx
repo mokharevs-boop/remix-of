@@ -53,24 +53,35 @@ export function MenuResults({
 
   if (categories.length === 0) return null;
 
+  const activeCategories = categories.filter((category) => category.items.length > 0);
   const total = categories.reduce(
     (sum, category) => sum + category.items.reduce((acc, item) => acc + getLineTotal(item), 0),
     0,
   );
+
+  if (activeCategories.length === 0) {
+    return (
+      <div className="mt-6 rounded-2xl border border-brand-green/30 bg-card p-5 text-center shadow-[var(--shadow-card)]">
+        <p className="inline-flex items-center gap-2 text-sm font-semibold text-brand-green">
+          <Check className="h-4 w-4" /> Всі страви додано до кошика
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-6 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-green/30 bg-card p-4 shadow-[var(--shadow-card)]">
         <p className="inline-flex items-center gap-2 text-sm font-semibold">
           <Sparkles className="h-4 w-4 text-brand-orange" />
-          ШІ підібрав {categories.length} категорій меню
+          ШІ підібрав {activeCategories.length} категорій меню
         </p>
         <span className="font-display text-lg font-bold text-brand-green">
           {formatPrice(total)}
         </span>
       </div>
 
-      {categories.map((category) => (
+      {activeCategories.map((category) => (
         <section
           key={category.id}
           className="rounded-3xl border border-border bg-card p-4 shadow-[var(--shadow-card)] sm:p-6"
@@ -84,26 +95,13 @@ export function MenuResults({
             </div>
             <button
               type="button"
-              onClick={() => {
-                onAddCategory(category);
-                flashAdded([
-                  `cat-${category.id}`,
-                  ...category.items.map((i) => `${category.id}-${i.sku}`),
-                ]);
-              }}
+              onClick={() => onAddCategory(category)}
               className="inline-flex items-center gap-1.5 rounded-full border border-brand-green/40 px-3 py-1.5 text-xs font-semibold text-brand-green transition hover:bg-brand-green/10"
             >
-              {addedKeys[`cat-${category.id}`] ? (
-                <>
-                  <Check className="h-3.5 w-3.5" /> Додано
-                </>
-              ) : (
-                <>
-                  <Plus className="h-3.5 w-3.5" /> Додати всі
-                </>
-              )}
+              <Plus className="h-3.5 w-3.5" /> Додати всі
             </button>
           </div>
+
 
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {category.items.map((item) => (
