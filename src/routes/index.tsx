@@ -301,21 +301,24 @@ function Landing() {
         return;
       }
 
-      // СЦЕНАРІЙ 2 — дані зібрані, рендеримо меню.
+      // СЦЕНАРІЙ 2 — дані зібрані, рендеримо меню (у кошик нічого не додаємо).
       const categories = parseMenuCategories(result);
       if (categories.length > 0) {
         setMenuCategories(categories);
-        setCartItems((prev) =>
-          mergeCartItems(prev, categories.flatMap((category) => category.items)),
-        );
-        pushTurn("bot", "Готово! Меню зібрано — перегляньте позиції нижче.");
+        pushTurn("bot", "Готово! Меню зібрано — додайте потрібні страви до кошика.");
         return;
       }
 
       const flatItems = parseCartItems(result);
       if (flatItems.length > 0) {
-        setCartItems((prev) => mergeCartItems(prev, flatItems));
-        pushTurn("bot", `Готово! Додано ${flatItems.length} позицій до кошика.`);
+        setMenuCategories([
+          {
+            id: `menu-${Date.now()}`,
+            title: "Підібране меню",
+            items: flatItems,
+          },
+        ]);
+        pushTurn("bot", `Готово! Підібрано ${flatItems.length} позицій — додайте їх до кошика.`);
         return;
       }
 
