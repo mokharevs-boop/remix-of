@@ -685,10 +685,25 @@ function Landing() {
         />
 
         <div className="mt-8">
-          <DeliveryCheckoutFlow
-            onSubmit={(payload) => setDeliveryPayload(payload)}
-          />
+          <DeliveryCheckoutFlow onSubmit={(payload) => setDeliveryPayload(payload)} />
         </div>
+
+        {deliveryPayload && (
+          <p className="mt-4 text-sm text-brand-green">
+            {deliveryPayload.deliveryType === "SelfPickup"
+              ? `Самовивіз: ${deliveryPayload.city}, ${deliveryPayload.street}, ${deliveryPayload.house}`
+              : `Доставка: ${deliveryPayload.city}, ${deliveryPayload.street}, ${deliveryPayload.house}`}
+            {" · "}
+            {new Date(deliveryPayload.timeslot.start).toLocaleString("uk-UA", {
+              day: "numeric",
+              month: "long",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        )}
+
+
 
 
 
