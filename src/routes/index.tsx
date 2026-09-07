@@ -366,13 +366,13 @@ function Landing() {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <a href="#top" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green text-white shadow-[var(--shadow-soft)]">
-              <Leaf className="h-5 w-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange text-white shadow-[var(--shadow-warm)]">
+              <ChefHat className="h-5 w-5" />
             </div>
             <div className="leading-tight">
-              <div className="font-display text-lg font-bold text-brand-green">Опліс</div>
+              <div className="font-display text-lg font-bold text-brand-orange">Опліс</div>
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                Кулінарія
+                AI-технолог Власного Виробництва «Сільпо»
               </div>
             </div>
           </a>
