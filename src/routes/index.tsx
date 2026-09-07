@@ -33,16 +33,19 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Опліс — Кулінарія та святкові страви на замовлення" },
+      { title: "Опліс — AI-технолог Власного Виробництва «Сільпо»" },
       {
         name: "description",
         content:
-          "Замовляйте нарізки, гарячі страви, фуршетні закуски та святкові торти від мережі супермаркетів Опліс. Свіжо, швидко, від шеф-кухарів.",
+          "Oplis Catering & Event Concierge: AI-технолог Власного Виробництва «Сільпо» збирає меню на подію, рахує порції та оформлює самовивіз або кур'єрську доставку.",
       },
-      { property: "og:title", content: "Опліс — Святкова кулінарія на замовлення" },
+      {
+        property: "og:title",
+        content: "Опліс — AI-технолог Власного Виробництва «Сільпо»",
+      },
       {
         property: "og:description",
-        content: "Свіжі страви від шеф-кухарів Опліс для вашого свята.",
+        content: "Oplis Catering & Event Concierge — меню на подію за одну хвилину.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
