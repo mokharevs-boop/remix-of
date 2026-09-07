@@ -679,6 +679,14 @@ function Landing() {
           onCheckout={() => setCartOpen(true)}
         />
 
+        <div className="mt-8">
+          <DeliveryCheckoutFlow
+            onSubmit={(payload) => setDeliveryPayload(payload)}
+          />
+        </div>
+
+
+
         <CartSheet
           open={cartOpen}
           onOpenChange={setCartOpen}
