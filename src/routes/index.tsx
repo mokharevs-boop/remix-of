@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import { Cart } from "@/components/Cart";
 import { CartSheet } from "@/components/CartSheet";
+import {
+  DeliveryCheckoutFlow,
+  type DeliveryPayload,
+} from "@/components/DeliveryCheckoutFlow";
 import { MenuResults } from "@/components/MenuResults";
 import {
   formatPrice,
