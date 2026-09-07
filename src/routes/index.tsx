@@ -447,13 +447,13 @@ function Landing() {
 
         <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-green/30 bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-green backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" /> Святкове меню від Опліс
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-white/60 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-brand-orange backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5" /> Oplis Catering &amp; Event Concierge
             </span>
             <h1 className="mt-6 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Святкуйте без турбот —{" "}
-              <span className="bg-gradient-to-r from-brand-green to-brand-orange bg-clip-text text-transparent">
-                кулінарія Опліс
+              <span className="text-brand-orange">
+                Опліс, AI-технолог Власного Виробництва «Сільпо»
               </span>{" "}
               для вашого свята
             </h1>
