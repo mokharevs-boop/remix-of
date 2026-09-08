@@ -20,9 +20,9 @@ import {
 import { Cart } from "@/components/Cart";
 import { CartSheet } from "@/components/CartSheet";
 import {
-  DeliveryCheckoutFlow,
-  type DeliveryPayload,
-} from "@/components/DeliveryCheckoutFlow";
+  DeliverySelector,
+  type DeliverySelection,
+} from "@/components/DeliverySelector";
 import { MenuResults } from "@/components/MenuResults";
 import {
   formatPrice,
@@ -133,13 +133,13 @@ function Landing() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [eventDescription, setEventDescription] = useState("");
-  const [branchId, setBranchId] = useState("");
+  const [delivery, setDelivery] = useState<DeliverySelection | null>(null);
   const [menuResponse, setMenuResponse] = useState("");
   const [menuError, setMenuError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [deliveryPayload, setDeliveryPayload] = useState<DeliveryPayload | null>(null);
+  
   const [menuCategories, setMenuCategories] = useState<MenuCategory[]>([]);
   const [menuInfo, setMenuInfo] = useState("");
   const [dialog, setDialog] = useState<DialogTurn[]>([]);
@@ -244,8 +244,8 @@ function Landing() {
   const generateMenu = async (overrideMessage?: string) => {
     const message = (overrideMessage ?? eventDescription).trim();
     if (!message || isGenerating) return;
-    if (!branchId) {
-      setMenuError("Оберіть локацію Опліс перед генерацією меню.");
+    if (!delivery?.branchId) {
+      setMenuError("Оберіть спосіб отримання перед генерацією меню.");
       return;
     }
 
@@ -265,7 +265,10 @@ function Landing() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_query: message,
-          branchId,
+          branchId: delivery.branchId,
+          deliveryType: delivery.deliveryType,
+          addressType: delivery.addressType,
+          timeslot: delivery.timeslot,
           profileId,
           conversationId: activeConversationId,
         }),
@@ -481,6 +484,7 @@ function Landing() {
                 )}
                 {dialog.length > 0 && (
                   <div
+                    ref={chatScrollRef}
                     className="max-h-64 space-y-2 overflow-y-auto rounded-xl bg-muted/40 p-3"
                     aria-live="polite"
                   >
@@ -508,6 +512,8 @@ function Landing() {
                     )}
                   </div>
                 )}
+                <DeliverySelector disabled={isGenerating} onChange={setDelivery} />
+
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <label htmlFor="event-description" className="sr-only">
                     Опишіть вашу подію
@@ -540,26 +546,6 @@ function Landing() {
                   </button>
                 </div>
 
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <label
-                    htmlFor="branch-select"
-                    className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Оберіть локацію Опліс
-                  </label>
-                  <select
-                    id="branch-select"
-                    value={branchId}
-                    onChange={(event) => setBranchId(event.target.value)}
-                    disabled={isGenerating}
-                    className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-brand-orange disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    <option value="">Оберіть локацію Опліс</option>
-                    <option value="1edb6b5a-55fb-6864-9a0f-d54e0a9fe643">Опліс — Івано-Франківськ (вул. Мазепи, 168А)</option>
-                    <option value="1edb6b5a-b1b0-611e-a929-d11f2666a570">Опліс — Івано-Франківськ (вул. Дністровська, 3)</option>
-                    <option value="1edb6b5b-831e-60fc-bf42-a302e997617d">Опліс — Чернівці (вул. Героїв Майдану, 71)</option>
-                  </select>
-                </div>
               </div>
 
               {menuError && (
@@ -683,25 +669,6 @@ function Landing() {
           onCommentChange={updateCartComment}
           onCheckout={() => setCartOpen(true)}
         />
-
-        <div className="mt-8">
-          <DeliveryCheckoutFlow onSubmit={(payload) => setDeliveryPayload(payload)} />
-        </div>
-
-        {deliveryPayload && (
-          <p className="mt-4 text-sm text-brand-green">
-            {deliveryPayload.deliveryType === "SelfPickup"
-              ? `Самовивіз: ${deliveryPayload.city}, ${deliveryPayload.street}, ${deliveryPayload.house}`
-              : `Доставка: ${deliveryPayload.city}, ${deliveryPayload.street}, ${deliveryPayload.house}`}
-            {" · "}
-            {new Date(deliveryPayload.timeslot.start).toLocaleString("uk-UA", {
-              day: "numeric",
-              month: "long",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
-        )}
 
 
 
