@@ -29,6 +29,7 @@ import {
   getLineTotal,
   mergeCartItems,
   parseCartItems,
+  parseGroupedCategories,
   parseMenuCategories,
   type CartItem,
   type MenuCategory,
@@ -321,10 +322,21 @@ function Landing() {
       }
 
       // СЦЕНАРІЙ 2 — дані зібрані, рендеримо меню (у кошик нічого не додаємо).
-      const categories = parseMenuCategories(result);
-      if (categories.length > 0) {
-        setMenuCategories(categories);
+      const structuredCategories = parseMenuCategories(result);
+      if (structuredCategories.length > 0) {
+        setMenuCategories(structuredCategories);
         pushTurn("bot", "Готово! Меню зібрано — додайте потрібні страви до кошика.");
+        return;
+      }
+
+      // Плаский масив items з полем item.category — групуємо за категоріями.
+      const groupedCategories = parseGroupedCategories(result);
+      if (groupedCategories.length > 0) {
+        setMenuCategories(groupedCategories);
+        pushTurn(
+          "bot",
+          `Готово! Підібрано ${groupedCategories.length} категорій — додайте потрібні страви до кошика.`,
+        );
         return;
       }
 

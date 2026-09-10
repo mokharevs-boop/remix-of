@@ -148,6 +148,59 @@ export function parseMenuCategories(payload: unknown): MenuCategory[] {
     .filter((category) => category.items.length > 0);
 }
 
+/**
+ * Групує плаский масив items за полем item.category.
+ * Кожна унікальна категорія стає окремою секцією меню.
+ * Якщо жоден елемент не має поля category — повертає [] (фолбека до одного блоку).
+ */
+export function parseGroupedCategories(payload: unknown): MenuCategory[] {
+  let raw: unknown = payload;
+
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const obj = raw as Record<string, unknown>;
+    raw = obj.items ?? obj.products ?? obj.cart ?? obj.data ?? obj.output ?? obj.menu ?? obj.result;
+  }
+  if (Array.isArray(raw) && raw.length > 0 && raw[0] && typeof raw[0] === "object") {
+    const first = raw[0] as Record<string, unknown>;
+    if (first.items || first.categories || first.output || first.data) {
+      raw = (first.items ?? first.categories ?? first.output ?? first.data) ?? raw;
+    }
+  }
+  if (!Array.isArray(raw)) return [];
+
+  const entries = raw.filter(
+    (entry): entry is Record<string, unknown> => !!entry && typeof entry === "object",
+  );
+  if (entries.length === 0) return [];
+
+  const hasAnyCategory = entries.some(
+    (e) =>
+      ("category" in e || "category_name" in e) &&
+      String((e as Record<string, unknown>).category ?? (e as Record<string, unknown>).category_name ?? "").trim().length > 0,
+  );
+  if (!hasAnyCategory) return [];
+
+  const groups = new Map<string, Record<string, unknown>[]>();
+  const order: string[] = [];
+  for (const entry of entries) {
+    const cat =
+      String(entry.category ?? entry.category_name ?? "").trim() || "Підібране меню";
+    if (!groups.has(cat)) {
+      groups.set(cat, []);
+      order.push(cat);
+    }
+    groups.get(cat)!.push(entry);
+  }
+
+  return order
+    .map((cat, index) => ({
+      id: `cat-${index}`,
+      title: cat,
+      items: parseCartItems(groups.get(cat)!),
+    }))
+    .filter((category) => category.items.length > 0);
+}
+
 /** Визначає, чи товар є штучним (піца, бургер, сендвіч тощо). */
 export function isPieceItem(item: CartItem): boolean {
   const unit = (item.unit ?? "").toLowerCase();
