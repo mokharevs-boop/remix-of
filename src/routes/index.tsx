@@ -29,6 +29,7 @@ import {
   getLineTotal,
   mergeCartItems,
   parseCartItems,
+  parseGroupedCategories,
   parseMenuCategories,
   type CartItem,
   type MenuCategory,
