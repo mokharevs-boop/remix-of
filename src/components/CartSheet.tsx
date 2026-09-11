@@ -1,4 +1,5 @@
-import { Minus, Pencil, Plus, ShoppingBasket, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Minus, Pencil, Plus, ShoppingBasket, Trash2, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -15,6 +16,12 @@ import {
   isPieceItem,
   type CartItem,
 } from "./cart-types";
+
+const CHECKOUT_URL =
+  "https://n8n58127.hostkey.in/webhook/oplis-mcp-agent-checkout";
+const CHECKOUT_BRANCH_ID = "1edb6b5a-55fb-6864-9a0f-d54e0a9fe643";
+const CHECKOUT_COMPANY_ID = "1ec88c5d-a050-669c-8467-570a157f3e31";
+const PAYMENT_URL_REGEX = /https:\/\/silpo\.ua\/checkout-new[^\s"']+/;
 
 type CartSheetProps = {
   open: boolean;
