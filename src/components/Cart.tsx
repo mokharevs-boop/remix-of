@@ -48,8 +48,8 @@ export function Cart({
           </div>
         ) : (
           <ul className="divide-y divide-border">
-            {items.map((item) => (
-              <li key={item.sku} className="py-4">
+            {items.map((item, index) => (
+              <li key={`${item.sku}-${index}`} className="py-4">
                 <div className="flex flex-wrap items-center gap-4">
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-muted text-2xl">
                   {item.image ? (

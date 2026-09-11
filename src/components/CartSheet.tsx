@@ -56,6 +56,9 @@ export function CartSheet({
     if (isCheckingOut || items.length === 0) return;
     setIsCheckingOut(true);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const payload = {
         branchId: CHECKOUT_BRANCH_ID,
@@ -70,6 +73,7 @@ export function CartSheet({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
 
       const data = await response.json();
@@ -87,6 +91,8 @@ export function CartSheet({
     } catch {
       setIsCheckingOut(false);
       toast.error("Сталася помилка при синхронізації кошика. Спробуйте ще раз.");
+    } finally {
+      clearTimeout(timeoutId);
     }
   };
 
@@ -112,8 +118,8 @@ export function CartSheet({
             </div>
           ) : (
             <ul className="divide-y divide-border">
-              {items.map((item) => (
-                <li key={item.sku} className="py-4">
+              {items.map((item, index) => (
+                <li key={`${item.sku}-${index}`} className="py-4">
                   <div className="flex items-start gap-3">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-xl">
                       {item.image ? (
