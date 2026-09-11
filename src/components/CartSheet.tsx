@@ -50,11 +50,44 @@ export function CartSheet({
     onQuantityChange(item.sku, next);
   };
 
-  const checkout = () => {
-    toast.success("Замовлення передано збиральникам Опліс!", {
-      description: `${items.length} позицій на суму ${formatPrice(payable)}. Ми зателефонуємо для підтвердження.`,
-    });
-    onOpenChange(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    if (isCheckingOut || items.length === 0) return;
+    setIsCheckingOut(true);
+
+    try {
+      const payload = {
+        branchId: CHECKOUT_BRANCH_ID,
+        items: items.map((item) => ({
+          productId: item.sku,
+          quantity: item.quantity,
+          companyId: CHECKOUT_COMPANY_ID,
+        })),
+      };
+
+      const response = await fetch(CHECKOUT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      const urlMatch =
+        typeof data === "string"
+          ? data.match(PAYMENT_URL_REGEX)
+          : JSON.stringify(data).match(PAYMENT_URL_REGEX);
+
+      if (urlMatch && urlMatch[0]) {
+        window.location.href = urlMatch[0];
+        return;
+      }
+
+      throw new Error("Payment URL not found in response");
+    } catch {
+      setIsCheckingOut(false);
+      toast.error("Сталася помилка при синхронізації кошика. Спробуйте ще раз.");
+    }
   };
 
   return (
