@@ -76,9 +76,9 @@ export function MenuResults({
 
 
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {category.items.map((item) => (
+            {category.items.map((item, index) => (
               <li
-                key={`${category.id}-${item.sku}`}
+                key={`${category.id}-${item.sku}-${index}`}
                 className="flex flex-col gap-3 rounded-2xl border border-border bg-background p-4"
               >
                 <div className="flex items-start gap-3">
