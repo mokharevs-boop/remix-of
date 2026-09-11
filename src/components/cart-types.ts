@@ -37,7 +37,9 @@ export function parseCartItems(payload: unknown): CartItem[] {
   return raw
     .filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === "object")
     .map((entry, index) => {
-      const sku = String(entry.sku ?? entry.SKU ?? entry.id ?? `item-${index}`);
+      const sku = String(
+        entry.product_id ?? entry.productId ?? entry.sku ?? entry.SKU ?? entry.id ?? `item-${index}`,
+      );
       const name = String(entry.name ?? entry.title ?? entry.product ?? "Товар");
       const unit = typeof entry.unit === "string" ? entry.unit : undefined;
       const isWeightUnit = /^(kg|кг|kilogram|г|грам|grams?|g)$/i.test(unit ?? "");
