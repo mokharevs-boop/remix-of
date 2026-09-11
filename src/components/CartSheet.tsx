@@ -50,11 +50,13 @@ export function CartSheet({
     onQuantityChange(item.sku, next);
   };
 
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCheckout = async () => {
-    if (isCheckingOut || items.length === 0) return;
-    setIsCheckingOut(true);
+    if (isLoading || isSubmitting || items.length === 0) return;
+    setIsLoading(true);
+    setIsSubmitting(true);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -76,23 +78,41 @@ export function CartSheet({
         signal: controller.signal,
       });
 
-      const data = await response.json();
-      const urlMatch =
-        typeof data === "string"
-          ? data.match(PAYMENT_URL_REGEX)
-          : JSON.stringify(data).match(PAYMENT_URL_REGEX);
+      if (!response.ok) {
+        throw new Error(`Checkout request failed with status ${response.status}`);
+      }
 
-      if (urlMatch && urlMatch[0]) {
-        window.location.href = urlMatch[0];
+      const responseText = await response.text();
+      let data: unknown = responseText;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        // The webhook may return a plain URL instead of JSON.
+      }
+
+      const responseData =
+        typeof data === "object" && data !== null
+          ? (data as { checkoutUrl?: unknown; output?: unknown; url?: unknown })
+          : undefined;
+      const candidate =
+        typeof data === "string"
+          ? data
+          : responseData?.checkoutUrl || responseData?.output || responseData?.url;
+      const url = typeof candidate === "string" ? candidate.trim() : "";
+
+      if (url && url.startsWith("http")) {
+        window.location.href = url;
         return;
       }
 
-      throw new Error("Payment URL not found in response");
+      toast.error("Не вдалося отримати посилання на оплату");
     } catch {
-      setIsCheckingOut(false);
       toast.error("Сталася помилка при синхронізації кошика. Спробуйте ще раз.");
     } finally {
       clearTimeout(timeoutId);
+      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -222,10 +242,10 @@ export function CartSheet({
           <button
             type="button"
             onClick={handleCheckout}
-            disabled={items.length === 0 || isCheckingOut}
+            disabled={items.length === 0 || isLoading || isSubmitting}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isCheckingOut ? (
+            {isLoading || isSubmitting ? (
               <>
                 <LoaderCircle className="h-4 w-4 animate-spin" />
                 Завантаження...
