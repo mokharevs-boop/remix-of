@@ -1,4 +1,5 @@
-import { Minus, Pencil, Plus, ShoppingBasket, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Minus, Pencil, Plus, ShoppingBasket, Trash2, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -15,6 +16,12 @@ import {
   isPieceItem,
   type CartItem,
 } from "./cart-types";
+
+const CHECKOUT_URL =
+  "https://n8n58127.hostkey.in/webhook/oplis-mcp-agent-checkout";
+const CHECKOUT_BRANCH_ID = "1edb6b5a-55fb-6864-9a0f-d54e0a9fe643";
+const CHECKOUT_COMPANY_ID = "1ec88c5d-a050-669c-8467-570a157f3e31";
+const PAYMENT_URL_REGEX = /https:\/\/silpo\.ua\/checkout-new[^\s"']+/;
 
 type CartSheetProps = {
   open: boolean;
@@ -43,11 +50,44 @@ export function CartSheet({
     onQuantityChange(item.sku, next);
   };
 
-  const checkout = () => {
-    toast.success("Замовлення передано збиральникам Опліс!", {
-      description: `${items.length} позицій на суму ${formatPrice(payable)}. Ми зателефонуємо для підтвердження.`,
-    });
-    onOpenChange(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async () => {
+    if (isCheckingOut || items.length === 0) return;
+    setIsCheckingOut(true);
+
+    try {
+      const payload = {
+        branchId: CHECKOUT_BRANCH_ID,
+        items: items.map((item) => ({
+          productId: item.sku,
+          quantity: item.quantity,
+          companyId: CHECKOUT_COMPANY_ID,
+        })),
+      };
+
+      const response = await fetch(CHECKOUT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      const urlMatch =
+        typeof data === "string"
+          ? data.match(PAYMENT_URL_REGEX)
+          : JSON.stringify(data).match(PAYMENT_URL_REGEX);
+
+      if (urlMatch && urlMatch[0]) {
+        window.location.href = urlMatch[0];
+        return;
+      }
+
+      throw new Error("Payment URL not found in response");
+    } catch {
+      setIsCheckingOut(false);
+      toast.error("Сталася помилка при синхронізації кошика. Спробуйте ще раз.");
+    }
   };
 
   return (
@@ -175,12 +215,21 @@ export function CartSheet({
           </div>
           <button
             type="button"
-            onClick={checkout}
-            disabled={items.length === 0}
+            onClick={handleCheckout}
+            disabled={items.length === 0 || isCheckingOut}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <ShoppingBasket className="h-4 w-4" />
-            Оформити замовлення
+            {isCheckingOut ? (
+              <>
+                <LoaderCircle className="h-4 w-4 animate-spin" />
+                Завантаження...
+              </>
+            ) : (
+              <>
+                <ShoppingBasket className="h-4 w-4" />
+                Оформити замовлення
+              </>
+            )}
           </button>
         </div>
       </SheetContent>
