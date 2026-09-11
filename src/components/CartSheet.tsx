@@ -215,12 +215,21 @@ export function CartSheet({
           </div>
           <button
             type="button"
-            onClick={checkout}
-            disabled={items.length === 0}
+            onClick={handleCheckout}
+            disabled={items.length === 0 || isCheckingOut}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-4 text-sm font-semibold btn-hero disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <ShoppingBasket className="h-4 w-4" />
-            Оформити замовлення
+            {isCheckingOut ? (
+              <>
+                <LoaderCircle className="h-4 w-4 animate-spin" />
+                Завантаження...
+              </>
+            ) : (
+              <>
+                <ShoppingBasket className="h-4 w-4" />
+                Оформити замовлення
+              </>
+            )}
           </button>
         </div>
       </SheetContent>
