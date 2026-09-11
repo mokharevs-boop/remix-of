@@ -118,8 +118,8 @@ export function CartSheet({
             </div>
           ) : (
             <ul className="divide-y divide-border">
-              {items.map((item) => (
-                <li key={item.sku} className="py-4">
+              {items.map((item, index) => (
+                <li key={`${item.sku}-${index}`} className="py-4">
                   <div className="flex items-start gap-3">
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-xl">
                       {item.image ? (
