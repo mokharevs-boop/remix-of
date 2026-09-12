@@ -48,9 +48,8 @@ export function CartSheet({
   const payable = Math.max(0, total - discountTotal);
 
   const step = (item: CartItem, direction: 1 | -1) => {
-    const delta = isPieceItem(item) ? 1 : 0.1;
-    const next = Number((item.quantity + delta * direction).toFixed(2));
-    onQuantityChange(item.sku, next);
+    const delta = getQuantityStep(item);
+    onQuantityChange(item.sku, normalizeQuantity(item, item.quantity + delta * direction));
   };
 
   const [isLoading, setIsLoading] = useState(false);
