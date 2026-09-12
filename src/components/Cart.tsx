@@ -1,10 +1,14 @@
 import { Minus, Pencil, Plus, ShoppingBasket, Trash2 } from "lucide-react";
 import {
+  formatGuestCalculation,
   formatPrice,
   formatPriceBreakdown,
+  formatQuantityWithUnit,
   formatUnitLabel,
   formatWeight,
   getLineTotal,
+  getQuantityStep,
+  normalizeQuantity,
   type CartItem,
 } from "./cart-types";
 
@@ -75,29 +79,46 @@ export function Cart({
                   <button
                     type="button"
                     aria-label={`Зменшити кількість ${item.name}`}
-                    onClick={() => onQuantityChange(item.sku, item.quantity - 1)}
+                    onClick={() =>
+                      onQuantityChange(
+                        item.sku,
+                        normalizeQuantity(item, item.quantity - getQuantityStep(item)),
+                      )
+                    }
                     className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-muted"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
+                  <span className="w-16 text-center text-sm font-semibold">
+                    {formatQuantityWithUnit(item)}
+                  </span>
                   <button
                     type="button"
                     aria-label={`Збільшити кількість ${item.name}`}
-                    onClick={() => onQuantityChange(item.sku, item.quantity + 1)}
+                    onClick={() =>
+                      onQuantityChange(
+                        item.sku,
+                        normalizeQuantity(item, item.quantity + getQuantityStep(item)),
+                      )
+                    }
                     className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-muted"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="w-32 text-right">
+                <div className="w-36 text-right">
                   <div className="font-display font-bold text-brand-green">
                     {formatPrice(getLineTotal(item))}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
                     {formatPriceBreakdown(item)}
                   </div>
+                  {formatGuestCalculation(item) && (
+                    <div className="text-[11px] text-muted-foreground/80">
+                      {formatGuestCalculation(item)}
+                    </div>
+                  )}
                 </div>
 
                 <button

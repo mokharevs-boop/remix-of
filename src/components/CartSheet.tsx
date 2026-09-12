@@ -9,11 +9,15 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
+  formatGuestCalculation,
   formatPrice,
   formatPriceBreakdown,
+  formatQuantityWithUnit,
   formatUnitLabel,
   getLineTotal,
+  getQuantityStep,
   isPieceItem,
+  normalizeQuantity,
   type CartItem,
 } from "./cart-types";
 
@@ -44,9 +48,8 @@ export function CartSheet({
   const payable = Math.max(0, total - discountTotal);
 
   const step = (item: CartItem, direction: 1 | -1) => {
-    const delta = isPieceItem(item) ? 1 : 0.1;
-    const next = Number((item.quantity + delta * direction).toFixed(2));
-    onQuantityChange(item.sku, next);
+    const delta = getQuantityStep(item);
+    onQuantityChange(item.sku, normalizeQuantity(item, item.quantity + delta * direction));
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +68,10 @@ export function CartSheet({
         branchId: CHECKOUT_BRANCH_ID,
         items: items.map((item) => ({
           productId: item.sku,
-          quantity: item.quantity,
+          quantity: isPieceItem(item)
+            ? Math.round(item.quantity)
+            : Number(item.quantity.toFixed(2)),
+          comment: item.pickerComment?.trim() || "",
           companyId: CHECKOUT_COMPANY_ID,
         })),
       };
@@ -164,6 +170,11 @@ export function CartSheet({
                       <div className="text-[11px] text-muted-foreground">
                         {formatPriceBreakdown(item)}
                       </div>
+                      {formatGuestCalculation(item) && (
+                        <div className="mt-1 text-[11px] text-muted-foreground/80">
+                          {formatGuestCalculation(item)}
+                        </div>
+                      )}
                     </div>
 
                     <button
@@ -186,10 +197,8 @@ export function CartSheet({
                       >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="w-14 text-center text-xs font-semibold">
-                        {isPieceItem(item)
-                          ? `${Math.round(item.quantity)} шт`
-                          : `${item.quantity.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} кг`}
+                      <span className="w-16 text-center text-xs font-semibold">
+                        {formatQuantityWithUnit(item)}
                       </span>
                       <button
                         type="button"
