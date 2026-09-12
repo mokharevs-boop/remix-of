@@ -273,10 +273,53 @@ export function getPortionPrice(item: CartItem): number {
   return item.price;
 }
 
-/** Підсумкова вартість позиції. Якщо є unit_price — item.price вже підсумкова. */
+/** Ціна за одиницю: ₴/кг для вагових, ₴/шт для штучних. */
+export function getUnitPrice(item: CartItem): number {
+  if (item.unit_price && item.unit_price > 0) return item.unit_price;
+  if (item.quantity > 0 && item.price > 0) return item.price / item.quantity;
+  return item.price;
+}
+
+/** Крок лічильника: 0.1 кг для вагових, 1 шт для штучних. */
+export function getQuantityStep(item: CartItem): number {
+  return isPieceItem(item) ? 1 : 0.1;
+}
+
+/** Нормалізує кількість під крок одиниці виміру. */
+export function normalizeQuantity(item: CartItem, quantity: number): number {
+  if (isPieceItem(item)) return Math.max(1, Math.round(quantity));
+  return Math.max(0.1, Number(quantity.toFixed(1)));
+}
+
+/** Підсумкова вартість позиції = кількість/вага × ціна за одиницю. */
 export function getLineTotal(item: CartItem): number {
-  if (item.unit_price && item.unit_price > 0) return item.price;
+  const unitPrice = getUnitPrice(item);
+  if (unitPrice > 0) return unitPrice * item.quantity;
   return getPortionPrice(item) * item.quantity;
+}
+
+/** Рядок розрахунку для гостей: "Розрахунок: загальна вага 1.6 кг, орієнтовно по 200 г на людину". */
+export function formatGuestCalculation(item: CartItem): string | undefined {
+  if (isPieceItem(item)) {
+    if (!item.guests || item.guests <= 0) return undefined;
+    const perGuest = item.quantity / item.guests;
+    return `Розрахунок: ${formatQuantityWithUnit(item)}, орієнтовно по ${perGuest.toLocaleString(
+      "uk-UA",
+      { maximumFractionDigits: 1 },
+    )} шт на людину`;
+  }
+
+  const totalGrams = item.quantity * 1000;
+  const perGuest =
+    item.gramsPerGuest && item.gramsPerGuest > 0
+      ? item.gramsPerGuest
+      : item.guests && item.guests > 0
+        ? totalGrams / item.guests
+        : undefined;
+  if (!perGuest) return undefined;
+  return `Розрахунок: загальна вага ${formatQuantityWithUnit(item)}, орієнтовно по ${Math.round(
+    perGuest,
+  )} г на людину`;
 }
 
 /** Підпис під сумою: "за 0.27 кг (889 грн/кг)" або "за 10 шт (120 грн/шт)". */
