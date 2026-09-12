@@ -322,30 +322,12 @@ export function formatGuestCalculation(item: CartItem): string | undefined {
   )} г на людину`;
 }
 
-/** Підпис під сумою: "за 0.27 кг (889 грн/кг)" або "за 10 шт (120 грн/шт)". */
+/** Підпис під сумою: "за 1.6 кг (379,00 грн/кг)" або "за 2 шт (150,00 грн/шт)". */
 export function formatPriceBreakdown(item: CartItem): string {
-  if (item.unit_price && item.unit_price > 0) {
-    const unitPrice = item.unit_price.toLocaleString("uk-UA", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-    if (isPieceItem(item)) {
-      return `за ${Math.round(item.quantity)} шт (${unitPrice} грн/шт)`;
-    }
-    const qty = item.quantity.toLocaleString("uk-UA", {
-      minimumFractionDigits: item.quantity % 1 === 0 ? 0 : 2,
-      maximumFractionDigits: 2,
-    });
-    return `за ${qty} кг (${unitPrice} грн/кг)`;
-  }
-
-  if (isWeightPriced(item)) {
-    const kg = item.weight / 1000;
-    const kgLabel = `${kg.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} кг`;
-    const per = `${item.price.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} ₴/кг`;
-    const pieces = item.pieces && item.pieces > 0 ? `, ${Math.round(item.pieces)} шт` : "";
-    return `за ${kgLabel} (${per}${pieces})`;
-  }
-
-  return `за ${formatUnitLabel(item)} · ${formatPrice(item.price)}`;
+  const unitPrice = getUnitPrice(item).toLocaleString("uk-UA", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const suffix = isPieceItem(item) ? "грн/шт" : "грн/кг";
+  return `за ${formatQuantityWithUnit(item)} (${unitPrice} ${suffix})`;
 }
