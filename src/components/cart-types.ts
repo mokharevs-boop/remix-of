@@ -12,6 +12,9 @@ export type CartItem = {
   pieces?: number; // кількість штук у позиції (для вагових товарів)
   unit?: string; // одиниця виміру: kg, g, pcs...
   unit_price?: number; // ціна за одну одиницю (за шт або за кг)
+  ratio?: string; // "кг" або "шт" — як рахується товар
+  gramsPerGuest?: number; // орієнтовно грам на людину
+  guests?: number; // кількість гостей
 };
 
 
