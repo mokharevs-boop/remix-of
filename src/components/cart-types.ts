@@ -45,7 +45,13 @@ export function parseCartItems(payload: unknown): CartItem[] {
       );
       const name = String(entry.name ?? entry.title ?? entry.product ?? "Товар");
       const unit = typeof entry.unit === "string" ? entry.unit : undefined;
-      const isWeightUnit = /^(kg|кг|kilogram|г|грам|grams?|g)$/i.test(unit ?? "");
+      const ratio =
+        typeof entry.ratio === "string"
+          ? entry.ratio
+          : typeof entry.ratio_unit === "string"
+            ? (entry.ratio_unit as string)
+            : undefined;
+      const isWeightUnit = /^(kg|кг|kilogram|г|грам|grams?|g)$/i.test(ratio ?? unit ?? "");
       const rawQty = toNumber(entry.quantity ?? entry.qty ?? 1);
       const quantity = isWeightUnit
         ? Math.max(0.01, rawQty)
