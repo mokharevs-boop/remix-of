@@ -170,6 +170,11 @@ export function CartSheet({
                       <div className="text-[11px] text-muted-foreground">
                         {formatPriceBreakdown(item)}
                       </div>
+                      {formatGuestCalculation(item) && (
+                        <div className="mt-1 text-[11px] text-muted-foreground/80">
+                          {formatGuestCalculation(item)}
+                        </div>
+                      )}
                     </div>
 
                     <button
