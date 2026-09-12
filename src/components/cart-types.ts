@@ -334,3 +334,36 @@ export function formatPriceBreakdown(item: CartItem): string {
   const suffix = isPieceItem(item) ? "грн/шт" : "грн/кг";
   return `за ${formatQuantityWithUnit(item)} (${unitPrice} ${suffix})`;
 }
+
+/** Коротка позначка одиниці: "кг" для вагових, "шт" для штучних. */
+export function getRatioUnit(item: CartItem): string {
+  return isPieceItem(item) ? "шт" : "кг";
+}
+
+/** Тип товару під назвою: "ваговий (кг)" / "поштучний (шт)", або ratio_label з бекенду. */
+export function getTypeLabel(item: CartItem): string {
+  if (item.ratioLabel) return item.ratioLabel;
+  return isPieceItem(item) ? "поштучний (шт)" : "ваговий (кг)";
+}
+
+/** Базова ціна за одиницю великим шрифтом: "379,00 ₴/кг" / "150,00 ₴/шт". */
+export function formatUnitPriceLabel(item: CartItem): string {
+  const unitPrice = getUnitPrice(item).toLocaleString("uk-UA", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${unitPrice} ₴/${getRatioUnit(item)}`;
+}
+
+/** Розрахунок за банкетний обсяг дрібним шрифтом: "за 2,6 кг — 985,40 ₴". */
+export function formatBanquetTotal(item: CartItem): string {
+  const qty = item.quantity.toLocaleString("uk-UA", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+  const total = getLineTotal(item).toLocaleString("uk-UA", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `за ${qty} ${getRatioUnit(item)} — ${total} ₴`;
+}
