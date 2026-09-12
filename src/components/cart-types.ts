@@ -13,6 +13,7 @@ export type CartItem = {
   unit?: string; // одиниця виміру: kg, g, pcs...
   unit_price?: number; // ціна за одну одиницю (за шт або за кг)
   ratio?: string; // "кг" або "шт" — як рахується товар
+  ratioLabel?: string; // людяний підпис одиниці з бекенду (напр. "ваговий (кг)")
   gramsPerGuest?: number; // орієнтовно грам на людину
   guests?: number; // кількість гостей
 };
@@ -51,6 +52,8 @@ export function parseCartItems(payload: unknown): CartItem[] {
           : typeof entry.ratio_unit === "string"
             ? (entry.ratio_unit as string)
             : undefined;
+      const ratioLabel =
+        typeof entry.ratio_label === "string" ? (entry.ratio_label as string) : undefined;
       const isWeightUnit = /^(kg|кг|kilogram|г|грам|grams?|g)$/i.test(ratio ?? unit ?? "");
       const rawQty = toNumber(entry.quantity ?? entry.qty ?? 1);
       const quantity = isWeightUnit
@@ -83,6 +86,7 @@ export function parseCartItems(payload: unknown): CartItem[] {
         unit,
         unit_price: toNumber(entry.unit_price ?? entry.unitPrice ?? 0) || undefined,
         ratio,
+        ratioLabel,
         gramsPerGuest:
           toNumber(
             entry.grams_per_guest ?? entry.gramsPerGuest ?? entry.per_person ?? entry.perPerson ?? 0,
