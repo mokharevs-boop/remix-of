@@ -245,9 +245,8 @@ export function formatQuantityWithUnit(item: CartItem): string {
     return `${Math.round(item.quantity)} шт`;
   }
   const qty = item.quantity || 0;
-  const hasFraction = qty % 1 !== 0;
   return `${qty.toLocaleString("uk-UA", {
-    minimumFractionDigits: hasFraction ? 2 : 0,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   })} кг`;
 }
