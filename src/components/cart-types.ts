@@ -220,6 +220,11 @@ export function parseGroupedCategories(payload: unknown): MenuCategory[] {
 
 /** Визначає, чи товар є штучним (піца, бургер, сендвіч тощо). */
 export function isPieceItem(item: CartItem): boolean {
+  const ratio = (item.ratio ?? "").toLowerCase().trim();
+  if (ratio) {
+    if (/^(кг|kg|kilogram|г|грам|grams?|g)$/i.test(ratio)) return false;
+    if (/^(шт|pcs|pieces?|piece|item|unit|порція)$/i.test(ratio)) return true;
+  }
   const unit = (item.unit ?? "").toLowerCase();
   if (
     /^(шт|pcs|pieces?|piece|піца|піци|бургер|сендвіч|sandwich|burger|pizza|item|unit|порція)$/i.test(
