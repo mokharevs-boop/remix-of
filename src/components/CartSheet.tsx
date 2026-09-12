@@ -9,11 +9,15 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
+  formatGuestCalculation,
   formatPrice,
   formatPriceBreakdown,
+  formatQuantityWithUnit,
   formatUnitLabel,
   getLineTotal,
+  getQuantityStep,
   isPieceItem,
+  normalizeQuantity,
   type CartItem,
 } from "./cart-types";
 
