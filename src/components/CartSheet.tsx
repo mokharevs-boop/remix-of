@@ -68,7 +68,10 @@ export function CartSheet({
         branchId: CHECKOUT_BRANCH_ID,
         items: items.map((item) => ({
           productId: item.sku,
-          quantity: item.quantity,
+          quantity: isPieceItem(item)
+            ? Math.round(item.quantity)
+            : Number(item.quantity.toFixed(2)),
+          comment: item.pickerComment?.trim() || "",
           companyId: CHECKOUT_COMPANY_ID,
         })),
       };
