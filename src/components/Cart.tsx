@@ -1,10 +1,14 @@
 import { Minus, Pencil, Plus, ShoppingBasket, Trash2 } from "lucide-react";
 import {
+  formatGuestCalculation,
   formatPrice,
   formatPriceBreakdown,
+  formatQuantityWithUnit,
   formatUnitLabel,
   formatWeight,
   getLineTotal,
+  getQuantityStep,
+  normalizeQuantity,
   type CartItem,
 } from "./cart-types";
 
