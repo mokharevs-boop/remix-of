@@ -197,10 +197,8 @@ export function CartSheet({
                       >
                         <Minus className="h-3.5 w-3.5" />
                       </button>
-                      <span className="w-14 text-center text-xs font-semibold">
-                        {isPieceItem(item)
-                          ? `${Math.round(item.quantity)} шт`
-                          : `${item.quantity.toLocaleString("uk-UA", { maximumFractionDigits: 2 })} кг`}
+                      <span className="w-16 text-center text-xs font-semibold">
+                        {formatQuantityWithUnit(item)}
                       </span>
                       <button
                         type="button"
