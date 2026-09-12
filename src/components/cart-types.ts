@@ -82,6 +82,12 @@ export function parseCartItems(payload: unknown): CartItem[] {
         pieces: toNumber(entry.pieces ?? entry.pcs ?? entry.units ?? 0) || undefined,
         unit,
         unit_price: toNumber(entry.unit_price ?? entry.unitPrice ?? 0) || undefined,
+        ratio,
+        gramsPerGuest:
+          toNumber(
+            entry.grams_per_guest ?? entry.gramsPerGuest ?? entry.per_person ?? entry.perPerson ?? 0,
+          ) || undefined,
+        guests: toNumber(entry.guests ?? entry.persons ?? entry.people ?? 0) || undefined,
       } satisfies CartItem;
     })
     .filter((item) => item.name.length > 0);
